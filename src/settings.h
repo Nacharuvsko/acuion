@@ -658,8 +658,10 @@ namespace Settings
 
         namespace Pitch
         {
-            inline bool enabled = false;
-            inline AntiAimType_X type = AntiAimType_X::STATIC_DOWN;
+            	inline bool enabled = false;
+		inline bool forceYaw = false;
+		inline float angle = 180.0f;
+  //          	inline AntiAimType_X type = AntiAimType_X::STATIC_DOWN;
         }
 
         namespace HeadEdge
