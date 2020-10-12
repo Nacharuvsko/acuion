@@ -54,7 +54,7 @@ git clone --recursive https://github.com/DrunkenBlyatHvH/acuion.git
 ```
 
 ```bash
-cd Fuzion
+cd acuion
 ```
 
 ===================
