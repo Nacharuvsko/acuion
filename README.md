@@ -1,26 +1,8 @@
 # acuion / acuifex fork
-Here are some of my configs that i use: </br>
-https://github.com/acuifex/acuion-personal-configs 
-### What have been done (that i remember):
-* Hitchance for aimbot and triggerbot
-* Backtrack that doesn't work with aimbot and triggerbot
-* Visual dots for backtrack
-* backtrack chams
-* Dirrection control for AA and LBY (left arrow and right arrow key)
-* Jitter preset for AA that i pasted from somewhere
-* AA yaw offset
-* Binding for thirdperson
-* "desync fail fix" some garbage. i recomend not using because only god knows what it does
-* Fixed some garbage crashes that i had
-* Added old aimtux AA's
-* Some yaw indicators in third person
-* AA yaw follow setting
-* Offset yaw by desync value in percents
-* [Skateboarding](https://youtu.be/MoNwuuIXmZI)
-* Show votes [#12](../../issues/12)
-* Skins updated [#12](../../issues/12)
-* Profile changer (only shows in game for me) [#16](../../issues/16)
-* Ban and unbox names (a bit buggy) [#16](../../issues/16)
+Newest Updates :                                      </br>
+Skins                (Credits OtakuLinux & Karl)      </br>
+Vote Reveal          (Credits auyylaso)               </br>
+Nimbus Resolver      (Credits Zedespook)              </br>
 
 # Original fuzion readme
 <p align="center">
@@ -68,7 +50,7 @@ sudo dnf install cmake gcc-c++ gdb git libstdc++-static mesa-libGL-devel SDL2-de
 #### Download Fuzion:
 
 ```bash
-git clone --recursive https://github.com/LWSS/Fuzion
+git clone --recursive https://github.com/DrunkenBlyatHvH/acuion.git
 ```
 
 ```bash
@@ -134,7 +116,7 @@ If you wish to unload the hack from the game, you can do so by entering the comm
 
 Configs are stored in a hidden directory in your home folder. Specifically 
 ```
-~/.config/Fuzion
+~/.config/acuion
 ```
 
 Each `config.json` is stored in a seperately named folder (The name you see in-game, in the config window). 
@@ -147,6 +129,12 @@ On your command line, you can also add the -a flag on `ls` e.g.
 ```bash
 ls -la ~/
 ```
+</br>
+Personal Configs
+</br>
+acuifex: 
+https://github.com/acuifex/acuion-personal-configs
+</br>
 
 
 ## Grenade Configs
