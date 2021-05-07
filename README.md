@@ -78,7 +78,7 @@ First of all, make sure CS:GO is open, it does not matter whether you are in gam
 
 Navigate to the directory where Fuzion was built if you have not ready.
 ```bash
-cd Fuzion
+cd acuion
 ```
 
 Now, you can inject the hack with the `load` script
