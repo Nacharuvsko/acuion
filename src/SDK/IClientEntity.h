@@ -757,7 +757,7 @@ public:
 
 	CCSWeaponInfo* GetCSWpnData() { // "script file not found" (client_client)
 		typedef CCSWeaponInfo* (* oGetCSWpnData)( void* );
-		return getvfunc<oGetCSWpnData>( this, 528 )( this );
+		return getvfunc<oGetCSWpnData>( this, 529 )( this );
 	}
 
 	float GetSpread() {
