@@ -423,7 +423,7 @@ static C_BasePlayer* GetClosestPlayerAndSpot(CUserCmd* cmd, bool visibleCheck, V
 
 		Aimbot::targetAimbot = i;
 		Vector eVecTarget = player->GetBonePosition((int) Settings::Aimbot::bone);
-		if( Settings::Aimbot::AutoAim::closestBone )
+		if( Settings::Aimbot::AutoAim::closestHitbox )
 		{
 			Vector tempSpot = GetClosestSpot(cmd, localplayer, player, aimTargetType);
 			if( tempSpot.IsZero() || !Entity::IsSpotVisibleThroughEnemies(player, tempSpot) )
