@@ -168,7 +168,7 @@ void Settings::LoadDefaultsOrSave(std::string path)
 		weaponSetting[XORSTR("Enabled")] = i.second.enabled;
 		weaponSetting[XORSTR("Silent")] = i.second.silent;
 		weaponSetting[XORSTR("Friendly")] = i.second.friendly;
-		weaponSetting[XORSTR("ClosestBone")] = i.second.closestBone;
+		weaponSetting[XORSTR("ClosestHitbox")] = i.second.closestHitbox;
 		weaponSetting[XORSTR("engageLock")] = i.second.engageLock;
 		weaponSetting[XORSTR("engageLockTR")] = i.second.engageLockTR;
 		weaponSetting[XORSTR("engageLockTTR")] = i.second.engageLockTTR;
@@ -209,8 +209,7 @@ void Settings::LoadDefaultsOrSave(std::string path)
 		weaponSetting[XORSTR("Prediction")][XORSTR("enabled")] = i.second.predEnabled;
 		weaponSetting[XORSTR("ScopeControl")][XORSTR("Enabled")] = i.second.scopeControlEnabled;
 
-		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
-			weaponSetting[XORSTR("DesiredBones")][XORSTR("Bones")][bone] = i.second.desiredBones[bone];
+		weaponSetting[XORSTR("DesiredHitboxes")] = i.second.desiredHitboxes;
 
 		weaponSetting[XORSTR("AutoAim")][XORSTR("RealDistance")] = i.second.autoAimRealDistance;
 
@@ -699,7 +698,7 @@ void Settings::LoadConfig(std::string path)
 				.enabled = weaponSetting[XORSTR( "Enabled" )].asBool(),
 				.silent = weaponSetting[XORSTR( "Silent" )].asBool(),
 				.friendly = weaponSetting[XORSTR( "Friendly" )].asBool(),
-				.closestBone = weaponSetting[XORSTR( "ClosestBone" )].asBool(),
+				.closestHitbox = weaponSetting[XORSTR( "ClosestHitbox" )].asBool(),
 				.engageLock = weaponSetting[XORSTR( "engageLock" )].asBool(),
 				.engageLockTR = weaponSetting[XORSTR( "engageLockTR" )].asBool(),
 				.aimkeyOnly = weaponSetting[XORSTR( "AimKeyOnly" )].asBool(),
@@ -743,8 +742,7 @@ void Settings::LoadConfig(std::string path)
 				.hitChance = weaponSetting[XORSTR( "HitChance" )][XORSTR( "Value" )].asFloat(),
 		};
 
-		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
-			weapon.desiredBones[bone] = weaponSetting[XORSTR("DesiredBones")][XORSTR("Bones")][bone].asBool();
+		weapon.desiredHitboxes = (HitboxFlags) weaponSetting[XORSTR("DesiredHitboxes")].asInt();
 		Settings::Aimbot::weapons[weaponID] = weapon;
 	}
 
