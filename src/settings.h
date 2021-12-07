@@ -227,8 +227,8 @@ struct AimbotWeapon_t
 	bool enabled,
 		 silent,
 		 friendly,
-		 closestBone,
-	     engageLock,
+		 closestHitbox,
+	    	 engageLock,
 		 engageLockTR,
 		 aimkeyOnly,
 		 smoothEnabled,
@@ -268,20 +268,17 @@ struct AimbotWeapon_t
 		  autoWallValue = 10.0f,
 		  spreadLimit = 1.0f,
 		  hitChance = 80.0f;
-	bool desiredBones[31];
+	HitboxFlags desiredHitboxes;
 
 	bool operator == (const AimbotWeapon_t& another) const
 	{
-		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
-		{
-			if( this->desiredBones[bone] != another.desiredBones[bone] )
-				return false;
-		}
+		if(this->desiredHitboxes != another.desiredHitboxes)
+			return false;
 
 		return this->enabled == another.enabled &&
 			this->silent == another.silent &&
 			this->friendly == another.friendly &&
-			this->closestBone == another.closestBone &&
+			this->closestHitbox == another.closestHitbox &&
 			this->engageLock == another.engageLock &&
 			this->engageLockTR == another.engageLockTR &&
 			this->engageLockTTR == another.engageLockTTR &&
@@ -482,13 +479,8 @@ namespace Settings
 			inline bool enabled = false;
             inline float fov = 180.0f;
             inline bool realDistance = false;
-            inline bool closestBone = false;
-            inline bool desiredBones[] = {true, true, true, true, true, true, true, // center mass
-                                          false, false, false, false, false, false, false, // left arm
-                                          false, false, false, false, false, false, false, // right arm
-                                          false, false, false, false, false, // left leg
-                                          false, false, false, false, false  // right leg
-            };
+            inline bool closestHitbox = false;
+            inline HitboxFlags desiredHitboxes = HitboxFlags::HEAD;
             inline bool engageLock = false;
             inline bool engageLockTR = false; // Target Reacquisition ( re-target after getting a kill when spraying ).
             inline int engageLockTTR = 700; // Time to Target Reacquisition in ms
