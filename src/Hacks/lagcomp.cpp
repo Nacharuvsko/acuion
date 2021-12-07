@@ -84,7 +84,7 @@ void RegisterTick()
             Entity::IsTeamMate(entity, localplayer) ||
             entity->GetImmune())
             continue;
-        // const std::unordered_map<int, int> *modelType = BoneMaps::GetModelTypeBoneMap(entity);
+        const int hitboxFlags = Settings::Aimbot::AutoAim::desiredHitboxes;
         LagComp::BacktrackRecord record = LagComp::BacktrackRecord{entity,
 																   
 	entity->GetBonePosition((*modelType).at(HITBOX_HEAD)),
