@@ -87,7 +87,7 @@ void RegisterTick()
         const int hitboxFlags = Settings::Aimbot::AutoAim::desiredHitboxes;
         LagComp::BacktrackRecord record = LagComp::BacktrackRecord{entity,
 																   
-	entity->GetBonePosition((*modelType).at(HITBOX_HEAD)),
+	// entity->GetBonePosition((*modelType).at(HITBOX_HEAD)),
 	entity->GetVecOrigin()};
 
 /*        *(int*)((uintptr_t)record.entity + 0xA30) = globalVars->framecount; // getting some weird stretch of model pls send halp
