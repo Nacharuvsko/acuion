@@ -5,27 +5,27 @@
 #include "../../Utils/xorstring.h"
 #include "../../settings.h"
 #include "../../Hacks/valvedscheck.h"
+#include "../atgui.h"
 #include "../../ImGUI/imgui_internal.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"
 
 void HvH::RenderTab()
 {
-	const char* yTypes[] = {
-			"SLOW SPIN", "FAST SPIN", "JITTER", "BACKJITTER", "SIDE", "BACKWARDS", "FORWARDS", "LEFT", "RIGHT", "STATIC", "STATIC JITTER", "STATIC SMALL JITTER", "FOLLOW", "CASUALAA",// safe
-			"LISP", "LISP SIDE", "LISP JITTER", "ANGEL BACKWARDS", "ANGEL INVERSE", "ANGEL SPIN", "LOWERBODY", "LBYONGROUND", // untrusted
+	static const char* yTypes[] = {
+			"BACKWARDS", "FORWARDS",
 	};
-
-	const char* xTypes[] = {
-			"UP", "DOWN", "DANCE", "FRONT", // safe
-			"LISP DOWN", "ANGEL DOWN", "ANGEL UP", // untrusted
+	
+	static const char* xTypes[] = {
+			"UP", "DOWN", "FRONT", // safe
 	};
-
-	const char* fTypes[] = {
-			"LEFT", "RIGHT", "JITTER", "MANUAL"
+	
+	static const char* fTypes[] = {
+			"LEFT", "RIGHT", "JITTER", "MANUAL",
+	    		"MEGALEAN" // untrusted
 	};
-
-	const char* pTypes[] = {
+	
+	static const char* pTypes[] = {
 			"DIY", "JITTER"
 	};
 
@@ -61,14 +61,7 @@ void HvH::RenderTab()
 					{
 						ImGui::PushItemWidth(-1);
 
-						if (ImGui::Combo(XORSTR("##YACTUALTYPE"), (int*)& Settings::AntiAim::Yaw::type, yTypes, IM_ARRAYSIZE(yTypes)))
-						{
-							if (!ValveDSCheck::forceUT && ((*csGameRules) && (*csGameRules)->IsValveDS()) && Settings::AntiAim::Yaw::type >= AntiAimYaw_Real::LISP)
-							{
-								Settings::AntiAim::Yaw::type = AntiAimYaw_Real::SPIN_SLOW;
-								ImGui::OpenPopup(XORSTR("Error###UNTRUSTED_AA"));
-							}
-						}
+						ImGui::Combo(XORSTR("##YACTUALTYPE"), (int*)& Settings::AntiAim::Yaw::type, yTypes, IM_ARRAYSIZE(yTypes));
 
 						ImGui::PopItemWidth();
 					}
@@ -105,14 +98,7 @@ void HvH::RenderTab()
 					ImGui::NextColumn();
 					{
 						ImGui::PushItemWidth(-1);
-						if (ImGui::Combo(XORSTR("##XTYPE"), (int*)& Settings::AntiAim::Pitch::type, xTypes, IM_ARRAYSIZE(xTypes)))
-						{
-							if (!ValveDSCheck::forceUT && ((*csGameRules) && (*csGameRules)->IsValveDS()) && Settings::AntiAim::Pitch::type >= AntiAimType_X::LISP_DOWN)
-							{
-								Settings::AntiAim::Pitch::type = AntiAimType_X::STATIC_UP;
-								ImGui::OpenPopup(XORSTR("Error###UNTRUSTED_AA"));
-							}
-						}
+						ImGui::Combo(XORSTR("##XTYPE"), (int*)& Settings::AntiAim::Pitch::type, xTypes, IM_ARRAYSIZE(xTypes));
 						ImGui::PopItemWidth();
 					}
 					ImGui::Columns(1);
@@ -138,6 +124,10 @@ void HvH::RenderTab()
 					{
 						ImGui::PushItemWidth(-1);
 						ImGui::Combo(XORSTR("##YAWFAKETYPE"), (int*)& Settings::AntiAim::Fake::type, fTypes, IM_ARRAYSIZE(fTypes));
+						if (Settings::AntiAim::Fake::type == AntiAimYaw_Fake::MEGALEAN) {
+						    ImGui::SliderFloat(XORSTR("Lean Length"), &Settings::AntiAim::Fake::maxLean, -45.f, 45.f, "Lean Length: %0.f");
+						    ImGui::Checkbox(XORSTR("Lean Jerk"), &Settings::AntiAim::Fake::leanJerk);
+						}
 						ImGui::PopItemWidth();
 					}
 				}
@@ -181,13 +171,23 @@ void HvH::RenderTab()
         ImGui::BeginChild(XORSTR("HVH2"), ImVec2(0, 0), true);
         {
             ImGui::Text(XORSTR("Resolver"));
+
             ImGui::Separator();
             ImGui::Checkbox(XORSTR("Resolve All"), &Settings::Resolver::resolveAll);
             ImGui::Separator();
+
             ImGui::Text(XORSTR("Movement"));
             ImGui::Checkbox(XORSTR("Auto Crouch"), &Settings::Aimbot::AutoCrouch::enabled);
             ImGui::Separator();
+
+	    ImGui::Text(XORSTR("Slowwalk"));
+	    ImGui::Checkbox(XORSTR("Slowwalk"), &Settings::AntiAim::Slowwalk::enabled);
+	    ImGui::SliderFloat(XORSTR("##SWSPEED"), &Settings::AntiAim::Slowwalk::Speed, 0, 100, "Slowwalk Speed: %0.f");
+	    UI::KeyBindButton(&Settings::AntiAim::Slowwalk::Key);
+	    ImGui::Separator();
+
             ImGui::Checkbox(XORSTR("Angle Indicator"), &Settings::AngleIndicator::enabled);
+
             ImGui::Columns(2, NULL, true);
 				{
 		            ImGui::Checkbox(XORSTR("LBY Breaker"), &Settings::AntiAim::LBYBreaker::enabled);

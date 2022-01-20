@@ -9,6 +9,7 @@
 #include "../Utils/draw.h"
 #include "../Utils/math.h"
 #include "../Utils/entity.h"
+#include "../Utils/bonemaps.h"
 #include "../Utils/xorstring.h"
 #include "../Hooks/hooks.h"
 
@@ -640,29 +641,14 @@ static void DrawAimbotSpot( ) {
 static void DrawBoneMap( C_BasePlayer* player ) {
 	static Vector bone2D;
 	static Vector bone3D;
-	model_t *model = player->GetModel();
-	if ( !model )
+	studiohdr_t* pStudioModel = modelInfo->GetStudioModel( player->GetModel() );
+
+	if( !pStudioModel )
 		return;
 
-	studiohdr_t *hdr = modelInfo->GetStudioModel(model);
-	if ( !hdr )
-		return;
-
-	mstudiohitboxset_t *hitboxSet = hdr->pHitboxSet(player->GetHitboxSetCount());
-	if ( !hitboxSet )
-		return;
-
-	for ( int i = 0; i < hitboxSet->numhitboxes; i++ )
-	{		
-		mstudiobbox_t* hitbox = hitboxSet->pHitbox(i);
-
-		if ( !hitbox )
-			continue;
-
-		int boneID = hitbox->bone;
-
-		bone3D = player->GetBonePosition(boneID);
-		mstudiobone_t* pBone = hdr->pBone( boneID );
+	for( int i = 1; i < pStudioModel->numbones; i++ ){
+		bone3D = player->GetBonePosition( i );
+        mstudiobone_t* pBone = pStudioModel->pBone( i );
 		if( !pBone )
 			continue;
 
@@ -678,32 +664,17 @@ static void DrawBoneMap( C_BasePlayer* player ) {
 	}
 	IEngineClient::player_info_t entityInformation;
 	engine->GetPlayerInfo( player->GetIndex(), &entityInformation );
-	cvar->ConsoleDPrintf( XORSTR( "(%s)-ModelName: %s, numBones: %d\n" ), entityInformation.name, hdr->name, hdr->numbones );
+	cvar->ConsoleDPrintf( XORSTR( "(%s)-ModelName: %s, numBones: %d\n" ), entityInformation.name, pStudioModel->name, pStudioModel->numbones );
 }
 static void DrawAutoWall(C_BasePlayer *player) {
-	model_t *model = player->GetModel();
-	if ( !model )
-		return;
-
-	studiohdr_t *hdr = modelInfo->GetStudioModel(model);
-	if ( !hdr )
-		return;
-
-	mstudiohitboxset_t *hitboxSet = hdr->pHitboxSet(player->GetHitboxSetCount());
-	if ( !hitboxSet )
-		return;
-
-	for ( int i = 0; i < hitboxSet->numhitboxes; i++ )
-	{		
-		mstudiobbox_t* hitbox = hitboxSet->pHitbox(i);
-
-		if ( !hitbox )
+	const std::unordered_map<int, int> *modelType = BoneMaps::GetModelTypeBoneMap(player);
+	for( int i = 0; i < 31; i++ )
+	{
+		auto bone = modelType->find(i);
+		if( bone == modelType->end() || bone->second <= BONE_INVALID )
 			continue;
-
-		int boneID = hitbox->bone;
-
 		Vector bone2D;
-		Vector bone3D = player->GetBonePosition(boneID);
+		Vector bone3D = player->GetBonePosition(bone->second);
 		if ( debugOverlay->ScreenPosition( bone3D, bone2D ) )
 			continue;
 
@@ -717,6 +688,13 @@ static void DrawAutoWall(C_BasePlayer *player) {
 	matrix3x4_t matrix[128];
 
 	if( !player->SetupBones(matrix, 128, 0x100, 0.f) )
+		return;
+	model_t *pModel = player->GetModel();
+	if( !pModel )
+		return;
+
+	studiohdr_t *hdr = modelInfo->GetStudioModel(pModel);
+	if( !hdr )
 		return;
 
 	mstudiobbox_t *bbox = hdr->pHitbox((int)Hitbox::HITBOX_HEAD, 0); // bounding box
@@ -1701,7 +1679,8 @@ void ESP::Paint()
 				DrawDZItems(entity, localplayer);
 		}
 	}
-	if (Settings::ThirdPerson::toggled)
+	
+	if (Settings::ThirdPerson::enabled && Settings::ThirdPerson::toggled && Settings::ESP::drawAATraces)
 		DrawAATrace(fake, actual, localplayer);
 	if (Settings::ESP::FOVCrosshair::enabled)
 		DrawFOVCrosshair();

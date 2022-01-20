@@ -19,6 +19,8 @@ class ILauncherMgr;
 class ICommandLine;
 class KeyValues;
 class CBaseClientState;
+class C_BasePlayer;
+class CCSGOAnimState;
 struct CGlowObjectManager;
 
 /* function prototypes */
@@ -26,6 +28,7 @@ typedef IClientMode* (*GetClientModeFn) (void);
 typedef CGlowObjectManager* (*GlowObjectManagerFn) (void);
 typedef bool (*MsgFunc_ServerRankRevealAllFn) (void*);
 typedef void (*SendClanTagFn) (const char*, const char*);
+typedef void (*HostDisconnectFn) (bool);
 typedef void (*SetLocalPlayerReadyFn) (const char*);
 typedef ILauncherMgr* (*ILauncherMgrCreateFn) (void);
 typedef void (*StartDrawingFn) (void*);
@@ -41,6 +44,11 @@ typedef float (*RandomFloatExpFn)(float, float, float);
 typedef int (*RandomIntFn)(int, int);
 typedef float (*RandomGaussianFloatFn)(float, float);
 typedef bool (*SetNamedSkyBoxFn)(const char*);
+typedef CCSGOAnimState* (*CreateAnimStateFn)(C_BasePlayer*);
+typedef void (*AnimStateUpdateFn)(CCSGOAnimState*, float, float, bool);
+typedef void (*AnimStateResetFn)(CCSGOAnimState*);
+
+extern unsigned long* g_iModelBoneCounter; // i don't think this is the best place for it
 
 extern Vector lastRayStart;
 extern Vector lastRayEnd;
@@ -202,7 +210,8 @@ enum class ItemDefinitionIndex : short
     	WEAPON_KNIFE_OUTDOOR = 521,
 	WEAPON_KNIFE_STILETTO = 522,
 	WEAPON_KNIFE_WIDOWMAKER,
-    	WEAPON_KNIFE_SKELETON = 525,
+    WEAPON_KNIFE_SKELETON = 525,
+	GLOVE_STUDDED_BROKENFANG = 4725 ,
 	GLOVE_STUDDED_BLOODHOUND = 5027,
 	GLOVE_T_SIDE = 5028,
 	GLOVE_CT_SIDE = 5029,
@@ -560,41 +569,14 @@ enum
 	NUM_OF_BONES, // leave at bottom
 };
 
-enum Hitbox
+enum class Hitbox : int
 {
 	HITBOX_HEAD = 0,
 	HITBOX_NECK,
 	HITBOX_PELVIS,
-	HITBOX_STOMACH,
-	HITBOX_LOWER_CHEST,
-	HITBOX_CHEST,
-	HITBOX_UPPER_CHEST,
-	HITBOX_RIGHT_THIGH,
-	HITBOX_LEFT_THIGH,
-	HITBOX_RIGHT_CALF,
-	HITBOX_LEFT_CALF,
-	HITBOX_RIGHT_FOOT,
-	HITBOX_LEFT_FOOT,
-	HITBOX_RIGHT_HAND,
-	HITBOX_LEFT_HAND,
-	HITBOX_RIGHT_UPPER_ARM,
-	HITBOX_RIGHT_FOREARM,
-	HITBOX_LEFT_UPPER_ARM,
-	HITBOX_LEFT_FOREARM,
-	HITBOX_COUNT,
-};
-
-enum HitboxFlags
-{
-    HEAD = 1 << 0,
-    NECK = 1 << 1,
-    PELVIS = 1 << 2,
-    STOMACH = 1 << 3,
-    CHEST = 1 << 4,
-    LEGS = 1 << 5,
-    FEET = 1 << 6,
-    HANDS = 1 << 7,
-    ARMS = 1 << 8
+	HITBOX_SPINE,
+	HITBOX_LEGS,
+	HITBOX_ARMS,
 };
 
 enum class HitGroups : int
@@ -607,8 +589,7 @@ enum class HitGroups : int
 	HITGROUP_RIGHTARM,
 	HITGROUP_LEFTLEG,
 	HITGROUP_RIGHTLEG,
-	HITGROUP_NECK = 8,
-	HITGROUP_GEAR = 10,
+	HITGROUP_GEAR
 };
 
 enum class CSWeaponType : int
@@ -1804,6 +1785,8 @@ const std::map<ItemDefinitionIndex, DefItem_t> ItemDefinitionIndexMap = {
 		{ ItemDefinitionIndex::WEAPON_KNIFE_CANIS,          { "#SFUI_WPNHUD_knife_canis", "weapon_knife_canis", "models/weapons/v_knife_canis.mdl", "knife_canis" } },
 		{ ItemDefinitionIndex::WEAPON_KNIFE_OUTDOOR,        { "#SFUI_WPNHUD_knife_outdoor", "weapon_knife_outdoor", "models/weapons/v_knife_outdoor.mdl", "knife_outdoor" } },
 		{ ItemDefinitionIndex::WEAPON_KNIFE_SKELETON,       { "#SFUI_WPNHUD_knife_skeleton", "weapon_knife_skeleton", "models/weapons/v_knife_skeleton.mdl", "knife_skeleton" } },
+		{ ItemDefinitionIndex::GLOVE_STUDDED_BROKENFANG,	{ "#CSGO_Wearable_t_studded_brokenfang_gloves", "studded_brokenfang_gloves", "models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_brokenfang.mdl" } },
+		{ ItemDefinitionIndex::GLOVE_HYDRA, 				{ "#CSGO_Wearable_t_studded_hydra_gloves", "studded_hydra_gloves", "models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound_hydra.mdl" } },
 		{ ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND,	{ "#CSGO_Wearable_t_studdedgloves", "studded_bloodhound_gloves", "models/weapons/v_models/arms/glove_bloodhound/v_glove_bloodhound.mdl" } },
 		{ ItemDefinitionIndex::GLOVE_T_SIDE,				{ "#CSGO_Wearable_t_defaultgloves", "t_gloves", "models/weapons/v_models/arms/glove_fingerless/v_glove_fingerless.mdl" } },
 		{ ItemDefinitionIndex::GLOVE_CT_SIDE,				{ "#CSGO_Wearable_ct_defaultgloves", "ct_gloves", "models/weapons/v_models/arms/glove_hardknuckle/v_glove_hardknuckle.mdl" } },

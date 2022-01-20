@@ -5,6 +5,7 @@
 #include "../Utils/xorstring.h"
 #include "../Utils/math.h"
 #include "../Utils/entity.h"
+#include "../Utils/bonemaps.h"
 #include "../Hooks/hooks.h"
 #include "../settings.h"
 #include "../interfaces.h"
@@ -136,73 +137,18 @@ bool Aimbot::HitChance(Vector bestSpot, C_BasePlayer* player, C_BaseCombatWeapon
     return false;
 }
 
-static bool IsFlagSetForHitbox(int flags, int hitbox)
-{
-    switch(hitbox)
-    {
-        case Hitbox::HITBOX_HEAD:
-            return flags & HitboxFlags::HEAD;
-        case Hitbox::HITBOX_NECK:
-            return flags & HitboxFlags::NECK;
-        case Hitbox::HITBOX_PELVIS:
-            return flags & HitboxFlags::PELVIS;
-        case Hitbox::HITBOX_STOMACH:
-            return flags & HitboxFlags::STOMACH;
-        case Hitbox::HITBOX_CHEST:
-        case Hitbox::HITBOX_LOWER_CHEST:
-        case Hitbox::HITBOX_UPPER_CHEST:
-            return flags & HitboxFlags::CHEST;
-        case Hitbox::HITBOX_LEFT_THIGH:
-        case Hitbox::HITBOX_RIGHT_THIGH:
-		case Hitbox::HITBOX_LEFT_CALF:
-        case Hitbox::HITBOX_RIGHT_CALF:
-            return flags & HitboxFlags::LEGS;
-        case Hitbox::HITBOX_LEFT_FOOT:
-        case Hitbox::HITBOX_RIGHT_FOOT:
-            return flags & HitboxFlags::FEET;
-        case Hitbox::HITBOX_LEFT_HAND:
-        case Hitbox::HITBOX_RIGHT_HAND:
-            return flags & HitboxFlags::HANDS;
-        case Hitbox::HITBOX_LEFT_UPPER_ARM:
-        case Hitbox::HITBOX_RIGHT_UPPER_ARM:
-        case Hitbox::HITBOX_LEFT_FOREARM:
-        case Hitbox::HITBOX_RIGHT_FOREARM:
-            return flags & HitboxFlags::ARMS;
-        default: // invalid hitbox?
-		{
-			cvar->ConsoleDPrintf(XORSTR("Warning: Wrong hitbox (%d) fed into IsFlagSetForHitbox\n"), hitbox);
-            return false;
-		}
-	}
-}
-
 static float AutoWallBestSpot(C_BasePlayer *player, Vector &bestSpot)
 {
-	model_t *model = player->GetModel();
-	if (!model)
-		return 0.f;
-
-	studiohdr_t *hdr = modelInfo->GetStudioModel(model);
-	if (!hdr)
-		return 0.f;
-
-	mstudiohitboxset_t *hitboxSet = hdr->pHitboxSet(player->GetHitboxSetCount());
-	if (!hitboxSet)
-		return 0.f;
-
 	float bestDamage = Settings::Aimbot::AutoWall::value;
-	const int hitboxFlags = Settings::Aimbot::AutoAim::desiredHitboxes;
-	for ( int i = 0; i < hitboxSet->numhitboxes; i++ )
+	const std::unordered_map<int, int> *modelType = BoneMaps::GetModelTypeBoneMap(player);
+
+	static int len = sizeof(Settings::Aimbot::AutoAim::desiredBones) / sizeof(Settings::Aimbot::AutoAim::desiredBones[0]);
+
+	for( int i = 0; i < len; i++ )
 	{
-		if( !IsFlagSetForHitbox(hitboxFlags, i) )
+		if( !Settings::Aimbot::AutoAim::desiredBones[i] )
 			continue;
-
-		mstudiobbox_t* hitbox = hitboxSet->pHitbox(i);
-
-		if ( !hitbox )
-			continue;
-
-		if( i == Hitbox::HITBOX_HEAD ) // head multipoint
+		if( i == CONST_BONE_HEAD ) // head multipoint
 		{
 			Vector headPoints[headVectors];
 			if( !HeadMultiPoint(player, headPoints) )
@@ -220,7 +166,9 @@ static float AutoWallBestSpot(C_BasePlayer *player, Vector &bestSpot)
 				}
 			}
 		}
-		int boneID = hitbox->bone;
+		int boneID = (*modelType).at(i);
+		if( boneID == BONE_INVALID ) // bone not available on this modeltype.
+			continue;
 
 		Vector bone3D = player->GetBonePosition(boneID);
 
@@ -276,18 +224,6 @@ static Vector VelocityExtrapolate(C_BasePlayer* player, Vector aimPos)
 /* Original Credits to: https://github.com/goldenguy00 ( study! study! study! :^) ) */
 static Vector GetClosestSpot( CUserCmd* cmd, C_BasePlayer* localPlayer, C_BasePlayer* enemy, AimTargetType aimTargetType = AimTargetType::FOV)
 {
-	model_t *model = enemy->GetModel();
-	if ( !model )
-		return Vector(0.f, 0.f, 0.f);
-
-	studiohdr_t *hdr = modelInfo->GetStudioModel( model );
-	if ( !hdr )
-		return Vector(0.f, 0.f, 0.f);
-
-	mstudiohitboxset_t *hitboxSet = hdr->pHitboxSet( enemy->GetHitboxSetCount() );
-	if ( !hitboxSet )
-		return Vector(0.f, 0.f, 0.f);
-	
 	QAngle viewAngles;
 	engine->GetViewAngles(viewAngles);
 
@@ -297,18 +233,18 @@ static Vector GetClosestSpot( CUserCmd* cmd, C_BasePlayer* localPlayer, C_BasePl
 	Vector pVecTarget = localPlayer->GetEyePosition();
 
 	Vector tempSpot = {0,0,0};
-	
-	const int hitboxFlags = Settings::Aimbot::AutoAim::desiredHitboxes;
-	for ( int i = 0; i < hitboxSet->numhitboxes; i++ )
-	{
-		if(!IsFlagSetForHitbox(hitboxFlags, i))
-			continue;
-		
-		mstudiobbox_t* hitbox = hitboxSet->pHitbox(i);
 
-		if (!hitbox)
+	const std::unordered_map<int, int> *modelType = BoneMaps::GetModelTypeBoneMap(enemy);
+
+	static int len = sizeof(Settings::Aimbot::AutoAim::desiredBones) / sizeof(Settings::Aimbot::AutoAim::desiredBones[0]);
+	for( int i = 0; i < len; i++ )
+	{
+		if( !Settings::Aimbot::AutoAim::desiredBones[i] )
 			continue;
-		int boneID = hitbox->bone;
+
+		int boneID = (*modelType).at(i);
+		if( boneID == BONE_INVALID )
+			continue;
 
 		Vector cbVecTarget = enemy->GetBonePosition(boneID);
 
@@ -357,7 +293,7 @@ static C_BasePlayer* GetClosestPlayerAndSpot(CUserCmd* cmd, bool visibleCheck, V
 
 	if( lockedOn )
 	{
-		if( lockedOn->GetAlive() && !Settings::Aimbot::AutoAim::closestHitbox && !Entity::IsSpotVisibleThroughEnemies(lockedOn, lockedOn->GetBonePosition((int)Settings::Aimbot::bone)) )
+		if( lockedOn->GetAlive() && !Settings::Aimbot::AutoAim::closestBone && !Entity::IsSpotVisibleThroughEnemies(lockedOn, lockedOn->GetBonePosition((int)Settings::Aimbot::bone)) )
 		{
 			lockedOn = nullptr;
 			return nullptr;
@@ -380,7 +316,7 @@ static C_BasePlayer* GetClosestPlayerAndSpot(CUserCmd* cmd, bool visibleCheck, V
 				return nullptr;
 			}
 
-			if( Settings::Aimbot::AutoAim::closestHitbox )
+			if( Settings::Aimbot::AutoAim::closestBone )
 			{
 				Vector tempSpot = GetClosestSpot(cmd, localplayer, lockedOn, aimTargetType);
 				if( tempSpot.IsZero() )
@@ -423,7 +359,7 @@ static C_BasePlayer* GetClosestPlayerAndSpot(CUserCmd* cmd, bool visibleCheck, V
 
 		Aimbot::targetAimbot = i;
 		Vector eVecTarget = player->GetBonePosition((int) Settings::Aimbot::bone);
-		if( Settings::Aimbot::AutoAim::closestHitbox )
+		if( Settings::Aimbot::AutoAim::closestBone )
 		{
 			Vector tempSpot = GetClosestSpot(cmd, localplayer, player, aimTargetType);
 			if( tempSpot.IsZero() || !Entity::IsSpotVisibleThroughEnemies(player, tempSpot) )
@@ -979,7 +915,7 @@ void Aimbot::UpdateValues()
 	Settings::Aimbot::ErrorMargin::value = currentWeaponSetting.errorMarginValue;
 	Settings::Aimbot::AutoAim::enabled = currentWeaponSetting.autoAimEnabled;
 	Settings::Aimbot::AutoAim::fov = currentWeaponSetting.autoAimFov;
-	Settings::Aimbot::AutoAim::closestHitbox = currentWeaponSetting.closestHitbox;
+	Settings::Aimbot::AutoAim::closestBone = currentWeaponSetting.closestBone;
 	Settings::Aimbot::AutoAim::engageLock = currentWeaponSetting.engageLock;
 	Settings::Aimbot::AutoAim::engageLockTR = currentWeaponSetting.engageLockTR;
 	Settings::Aimbot::AutoAim::engageLockTTR = currentWeaponSetting.engageLockTTR;
@@ -1008,6 +944,9 @@ void Aimbot::UpdateValues()
 	Settings::Aimbot::AutoWall::value = currentWeaponSetting.autoWallValue;
 	Settings::Aimbot::AutoSlow::enabled = currentWeaponSetting.autoSlow;
 	Settings::Aimbot::ScopeControl::enabled = currentWeaponSetting.scopeControlEnabled;
-	Settings::Aimbot::AutoAim::desiredHitboxes = currentWeaponSetting.desiredHitboxes;
+
+	for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
+		Settings::Aimbot::AutoAim::desiredBones[bone] = currentWeaponSetting.desiredBones[bone];
+
 	Settings::Aimbot::AutoAim::realDistance = currentWeaponSetting.autoAimRealDistance;
 }

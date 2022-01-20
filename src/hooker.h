@@ -22,6 +22,7 @@ namespace Hooker
 	void FindGameRules();
 	void FindRankReveal();
 	void FindSendClanTag();
+	void FindHostDisconnect();
 	void FindViewRender();
 	void FindPrediction();
 	void FindSetLocalPlayerReady();
@@ -32,12 +33,15 @@ namespace Hooker
 	void FindLoadFromBuffer();
 	void FindVstdlibFunctions();
 	void FindOverridePostProcessingDisable();
+	void FindModelBoneCounter();
 	void FindSDLInput();
 	void FindSetNamedSkybox();
 	void FindPanelArrayOffset();
 	void FindPlayerAnimStateOffset();
+	void FindPlayerAnimStateFunctions();
     void FindPlayerAnimOverlayOffset();
 	void FindSequenceActivity();
 	void FindAbsFunctions();
 	void FindItemSystem();
+	void FindCSMEnabled();
 }

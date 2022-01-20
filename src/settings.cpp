@@ -168,7 +168,7 @@ void Settings::LoadDefaultsOrSave(std::string path)
 		weaponSetting[XORSTR("Enabled")] = i.second.enabled;
 		weaponSetting[XORSTR("Silent")] = i.second.silent;
 		weaponSetting[XORSTR("Friendly")] = i.second.friendly;
-		weaponSetting[XORSTR("ClosestHitbox")] = i.second.closestHitbox;
+		weaponSetting[XORSTR("ClosestBone")] = i.second.closestBone;
 		weaponSetting[XORSTR("engageLock")] = i.second.engageLock;
 		weaponSetting[XORSTR("engageLockTR")] = i.second.engageLockTR;
 		weaponSetting[XORSTR("engageLockTTR")] = i.second.engageLockTTR;
@@ -209,7 +209,8 @@ void Settings::LoadDefaultsOrSave(std::string path)
 		weaponSetting[XORSTR("Prediction")][XORSTR("enabled")] = i.second.predEnabled;
 		weaponSetting[XORSTR("ScopeControl")][XORSTR("Enabled")] = i.second.scopeControlEnabled;
 
-		weaponSetting[XORSTR("DesiredHitboxes")] = i.second.desiredHitboxes;
+		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
+			weaponSetting[XORSTR("DesiredBones")][XORSTR("Bones")][bone] = i.second.desiredBones[bone];
 
 		weaponSetting[XORSTR("AutoAim")][XORSTR("RealDistance")] = i.second.autoAimRealDistance;
 
@@ -594,6 +595,8 @@ void Settings::LoadDefaultsOrSave(std::string path)
 	LoadColor(settings[XORSTR("ASUSWalls")][XORSTR("color")], Settings::ASUSWalls::color);
 
 	settings[XORSTR("NoScopeBorder")][XORSTR("enabled")] = Settings::NoScopeBorder::enabled;
+	
+	settings[XORSTR("AutoDisconnect")][XORSTR("enabled")] = Settings::AutoDisconnect::enabled;
 
 	settings[XORSTR("SniperCrosshair")][XORSTR("enabled")] = Settings::SniperCrosshair::enabled;
 
@@ -624,7 +627,7 @@ void Settings::LoadDefaultsOrSave(std::string path)
 	settings[XORSTR("ThirdPerson")][XORSTR("enabled")] = Settings::ThirdPerson::enabled;
 	settings[XORSTR("ThirdPerson")][XORSTR("distance")] = Settings::ThirdPerson::distance;
 	settings[XORSTR("ThirdPerson")][XORSTR("type")] = (int) Settings::ThirdPerson::type;
-	settings[XORSTR("ThirdPerson")][XORSTR("key")] = Settings::ThirdPerson::key;
+	settings[XORSTR("ThirdPerson")][XORSTR("key")] = Util::GetButtonName(Settings::ThirdPerson::key);
 
 	settings[XORSTR("JumpThrow")][XORSTR("enabled")] = Settings::JumpThrow::enabled;
 	settings[XORSTR("JumpThrow")][XORSTR("key")] = Util::GetButtonName(Settings::JumpThrow::key);
@@ -632,6 +635,8 @@ void Settings::LoadDefaultsOrSave(std::string path)
 	settings[XORSTR("DisablePostProcessing")][XORSTR("enabled")] = Settings::DisablePostProcessing::enabled;
 	settings[XORSTR("Skateboarding")][XORSTR("enabled")] = Settings::Skateboarding::enabled;
 	settings[XORSTR("NoFall")][XORSTR("enabled")] = Settings::NoFall::enabled;
+
+	settings[XORSTR("NoCSM")][XORSTR("enabled")] = Settings::NoCSM::enabled;
 
 	settings[XORSTR("GrenadeHelper")][XORSTR("enabled")] = Settings::GrenadeHelper::enabled;
 	settings[XORSTR("GrenadeHelper")][XORSTR("aimAssist")] = Settings::GrenadeHelper::aimAssist;
@@ -698,7 +703,7 @@ void Settings::LoadConfig(std::string path)
 				.enabled = weaponSetting[XORSTR( "Enabled" )].asBool(),
 				.silent = weaponSetting[XORSTR( "Silent" )].asBool(),
 				.friendly = weaponSetting[XORSTR( "Friendly" )].asBool(),
-				.closestHitbox = weaponSetting[XORSTR( "ClosestHitbox" )].asBool(),
+				.closestBone = weaponSetting[XORSTR( "ClosestBone" )].asBool(),
 				.engageLock = weaponSetting[XORSTR( "engageLock" )].asBool(),
 				.engageLockTR = weaponSetting[XORSTR( "engageLockTR" )].asBool(),
 				.aimkeyOnly = weaponSetting[XORSTR( "AimKeyOnly" )].asBool(),
@@ -742,7 +747,8 @@ void Settings::LoadConfig(std::string path)
 				.hitChance = weaponSetting[XORSTR( "HitChance" )][XORSTR( "Value" )].asFloat(),
 		};
 
-		weapon.desiredHitboxes = (HitboxFlags) weaponSetting[XORSTR("DesiredHitboxes")].asInt();
+		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
+			weapon.desiredBones[bone] = weaponSetting[XORSTR("DesiredBones")][XORSTR("Bones")][bone].asBool();
 		Settings::Aimbot::weapons[weaponID] = weapon;
 	}
 
@@ -753,8 +759,10 @@ void Settings::LoadConfig(std::string path)
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("AutoDisable")][XORSTR("knife_held")], &Settings::AntiAim::AutoDisable::knifeHeld);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("Preset")][XORSTR("type")], (int*)&Settings::AntiAim::Preset::type);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("enabled")], &Settings::AntiAim::Yaw::enabled);
+	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("addDesyncEnabled")], &Settings::AntiAim::Yaw::addDesyncEnabled);
+	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("addDesyncoffset")], &Settings::AntiAim::Yaw::addDesyncOffset);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("type")], (int*)&Settings::AntiAim::Yaw::type);
-	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("offset")], (int*)&Settings::AntiAim::Yaw::offset);
+	GetVal(settings[XORSTR("AntiAim")][XORSTR("Yaw")][XORSTR("offset")], &Settings::AntiAim::Yaw::offset);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("Fake")][XORSTR("enabled")], &Settings::AntiAim::Fake::enabled);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("Fake")][XORSTR("type")], (int*)&Settings::AntiAim::Fake::type);
 	GetVal(settings[XORSTR("AntiAim")][XORSTR("RageDesyncFix")][XORSTR("enabled")], &Settings::AntiAim::RageDesyncFix::enabled);
@@ -1159,6 +1167,7 @@ void Settings::LoadConfig(std::string path)
 	GetVal(settings[XORSTR("ASUSWalls")][XORSTR("color")], &Settings::ASUSWalls::color);
 
 	GetVal(settings[XORSTR("NoScopeBorder")][XORSTR("enabled")], &Settings::NoScopeBorder::enabled);
+	GetVal(settings[XORSTR("AutoDisconnect")][XORSTR("enabled")], &Settings::AutoDisconnect::enabled);
 
 	GetVal(settings[XORSTR("SniperCrosshair")][XORSTR("enabled")], &Settings::SniperCrosshair::enabled);
 
@@ -1189,6 +1198,7 @@ void Settings::LoadConfig(std::string path)
 	GetVal(settings[XORSTR("ThirdPerson")][XORSTR("enabled")], &Settings::ThirdPerson::enabled);
 	GetVal(settings[XORSTR("ThirdPerson")][XORSTR("distance")], &Settings::ThirdPerson::distance);
 	GetVal(settings[XORSTR("ThirdPerson")][XORSTR("type")], (int*)&Settings::ThirdPerson::type);
+	GetButtonCode(settings[XORSTR("ThirdPerson")][XORSTR("key")], &Settings::ThirdPerson::key);
 
 	GetVal(settings[XORSTR("JumpThrow")][XORSTR("enabled")], &Settings::JumpThrow::enabled);
 	GetButtonCode(settings[XORSTR("JumpThrow")][XORSTR("key")], &Settings::JumpThrow::key);
@@ -1197,7 +1207,9 @@ void Settings::LoadConfig(std::string path)
 	GetVal(settings[XORSTR("Skateboarding")][XORSTR("enabled")], &Settings::Skateboarding::enabled);
 	GetVal(settings[XORSTR("NoFall")][XORSTR("enabled")], &Settings::NoFall::enabled);
 
-	GetVal(settings[XORSTR("GrenadeHelper")][XORSTR("enabled")], &Settings::GrenadeHelper::enabled);
+	GetVal(settings[XORSTR("NoCSM")][XORSTR("enabled")], &Settings::NoCSM::enabled);
+
+    	GetVal(settings[XORSTR("GrenadeHelper")][XORSTR("enabled")], &Settings::GrenadeHelper::enabled);
 	GetVal(settings[XORSTR("GrenadeHelper")][XORSTR("aimAssist")], &Settings::GrenadeHelper::aimAssist);
 	GetVal(settings[XORSTR("GrenadeHelper")][XORSTR("OnlyMatching")], &Settings::GrenadeHelper::onlyMatchingInfos);
 	GetVal(settings[XORSTR("GrenadeHelper")][XORSTR("aimStep")], &Settings::GrenadeHelper::aimStep);

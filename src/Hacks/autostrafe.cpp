@@ -3,9 +3,6 @@
 #include "../settings.h"
 #include "../interfaces.h"
 #include "../Utils/math.h"
-#include <math.h>
-
-#define PI 3.14159265
 
 static void LegitStrafe(C_BasePlayer* localplayer, CUserCmd* cmd)
 {
@@ -40,89 +37,45 @@ static void LegitStrafe(C_BasePlayer* localplayer, CUserCmd* cmd)
 static void RageStrafe(C_BasePlayer* localplayer, CUserCmd* cmd)
 {
 	static bool leftRight;
-	static float prevYaw;
 	bool inMove = cmd->buttons & IN_FORWARD || cmd->buttons & IN_BACK || cmd->buttons & IN_MOVELEFT || cmd->buttons & IN_MOVERIGHT;
 
-	float yaw_change = 0.0f;
+	if (cmd->buttons & IN_FORWARD && localplayer->GetVelocity().Length() <= 50.0f)
+		cmd->forwardmove = 250.0f;
 
+	float yaw_change = 0.0f;
 	if (localplayer->GetVelocity().Length() > 50.f)
 		yaw_change = 30.0f * fabsf(30.0f / localplayer->GetVelocity().Length());
 
-	if(yaw_change > 90.0f)
-		yaw_change = 90.0f;
+	C_BaseCombatWeapon* activeWeapon = (C_BaseCombatWeapon*) entityList->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
+	if (activeWeapon && !activeWeapon->GetAmmo() == 0 && cmd->buttons & IN_ATTACK)
+		yaw_change = 0.0f;
 
 	QAngle viewAngles;
 	engine->GetViewAngles(viewAngles);
 
-	float forwardmove = cmd->forwardmove;
-	float sidemove = cmd->sidemove;
-	
-	static float newDir = 0.0f;
-	float goal = atan2(forwardmove, sidemove);
-
-	float max = PI * 2;
-	float temp = fmod(goal - newDir, max);
-	
-	float delta = fmod(2 * temp, max) - temp;
-
-	float yawChangeInRadians = yaw_change * PI / 180.0f;
-		
-	if(delta > yawChangeInRadians)
-		delta = yawChangeInRadians;
-
-	if(delta < -yawChangeInRadians)
-		delta = -yawChangeInRadians;
-
-	if(inMove) {
-		newDir += delta;
-	}
-	
-	float goalYaw = viewAngles.y + newDir / PI * 180.0f - 90.0f;
-	
-	float deltaYaw = prevYaw - goalYaw;
-	
-	if (!(localplayer->GetFlags() & FL_ONGROUND) || cmd->buttons & IN_JUMP) {
-		forwardmove = 0.0f;
-
-		if(deltaYaw == 0.0f) {
-			if (leftRight)
-			{
-				goalYaw += yaw_change;
-				sidemove = 450.0f;
-			}
-			else if (!leftRight)
-			{
-				goalYaw -= yaw_change;
-				sidemove = -450.0f;
-			}
-
-			leftRight = !leftRight;
-		} else if(deltaYaw > 0.0f) {
-			sidemove = 450.0f;
-		} else if(deltaYaw < 0.0f) {
-			sidemove = -450.0f;
+	if (!(localplayer->GetFlags() & FL_ONGROUND) && !inMove)
+	{
+		if (leftRight || cmd->mousedx > 1)
+		{
+			viewAngles.y += yaw_change;
+			cmd->sidemove = 250.0f;
 		}
+		else if (!leftRight || cmd->mousedx < 1)
+		{
+			viewAngles.y -= yaw_change;
+			cmd->sidemove = -250.0f;
+		}
+
+		leftRight = !leftRight;
 	}
-	
-	if (!(localplayer->GetFlags() & FL_ONGROUND) || cmd->buttons & IN_JUMP) {
-		viewAngles.y = goalYaw;
-	} else {
-		prevYaw = goalYaw;
-		newDir = goal;
-	}
-	
-	prevYaw = viewAngles.y;
 
 	Math::NormalizeAngles(viewAngles);
 	Math::ClampAngles(viewAngles);
 
-	if (!Settings::AutoStrafe::silent) {
+	Math::CorrectMovement(viewAngles, cmd, cmd->forwardmove, cmd->sidemove);
+
+	if (!Settings::AutoStrafe::silent)
 		cmd->viewangles = viewAngles;
-		cmd->forwardmove = forwardmove;
-		cmd->sidemove = sidemove;
-	}
-	else
-		Math::CorrectMovement(viewAngles, cmd, forwardmove, sidemove);
 }
 
 void AutoStrafe::CreateMove(CUserCmd* cmd)

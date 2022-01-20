@@ -3,6 +3,7 @@
 #include "../interfaces.h"
 
 #include "../Hacks/customglow.h"
+#include "../Hacks/chams.h"
 #include "../Hacks/skinchanger.h"
 #include "../Hacks/noflash.h"
 #include "../Hacks/view.h"
@@ -17,6 +18,7 @@ typedef void (*FrameStageNotifyFn) (void*, ClientFrameStage_t);
 
 void Hooks::FrameStageNotify(void* thisptr, ClientFrameStage_t stage)
 {
+	Chams::FrameStageNotify(stage);
 	CustomGlow::FrameStageNotify(stage);
 	SkinChanger::FrameStageNotifyModels(stage);
 	SkinChanger::FrameStageNotifySkins(stage);
@@ -37,6 +39,6 @@ void Hooks::FrameStageNotify(void* thisptr, ClientFrameStage_t stage)
 
 	clientVMT->GetOriginalMethod<FrameStageNotifyFn>(37)(thisptr, stage);
 
-//	Resolver::PostFrameStageNotify(stage);
+	Resolver::PostFrameStageNotify(stage);
 	View::PostFrameStageNotify(stage);
 }

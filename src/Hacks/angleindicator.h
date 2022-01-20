@@ -4,4 +4,5 @@ namespace AngleIndicator
 {
 
     void Paint();
+
 }

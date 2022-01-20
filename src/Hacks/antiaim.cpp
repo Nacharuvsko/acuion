@@ -207,29 +207,30 @@ static void DoAntiAimPreset(QAngle& angle, bool bSend, CCSGOAnimState* animState
 
 	switch (Settings::AntiAim::Preset::type)
 	{
-		case AntiAimYaw_Preset::JITTER:
-			angle.x = 89.0f;
-			if(yFlip)
-				angle.y += manualswitch ? halfDelta : -halfDelta;
-			else
-				angle.y += manualswitch ? -halfDelta + 180.0f : halfDelta + 180.0f;
+	case AntiAimYaw_Preset::JITTER:
+	    angle.x = 89.0f;
+	    if (yFlip)
+		angle.y += manualswitch ? halfDelta : -halfDelta;
+	    else
+		angle.y += manualswitch ? -halfDelta + 180.0f : halfDelta + 180.0f;
 
-			if(!bSend)
-			{
-				if(yFlip)
-					angle.y += manualswitch ? -maxDelta : maxDelta;
-				else
-					angle.y += manualswitch ? maxDelta : -maxDelta;
-			}
-			else
-				yFlip = !yFlip;
+	    if (!bSend)
+	    {
+		if (yFlip)
+		    angle.y += manualswitch ? -maxDelta : maxDelta;
+		else
+		    angle.y += manualswitch ? maxDelta : -maxDelta;
+	    }
+	    else
+		yFlip = !yFlip;
 
-			break;
-
+	    break;
 	}
 
 }
 
+
+bool leanJerking = false; //fixme
 static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 {
 
@@ -237,6 +238,7 @@ static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 		return;
 
 	AntiAimYaw_Real aa_type = Settings::AntiAim::Yaw::type;
+	AntiAimYaw_Fake fake = Settings::AntiAim::Fake::type;
 	float maxDelta = AntiAim::GetMaxDelta(animState);
 	static bool yFlip;
 	float temp;
@@ -251,146 +253,28 @@ static void DoAntiAimY(QAngle& angle, bool& clamp, CCSGOAnimState* animState)
 
 	switch (aa_type)
 	{
-		case AntiAimYaw_Real::SPIN_FAST:
-			factor =  360.0 / M_PHI;
-			factor *= 25;
-			angle.y = fmodf(globalVars->curtime * factor, 360.0);
-			break;
-		case AntiAimYaw_Real::SPIN_SLOW:
-			factor =  360.0 / M_PHI;
-			angle.y = fmodf(globalVars->curtime * factor, 360.0);
-			break;
-		case AntiAimYaw_Real::JITTER:
-			yFlip ? angle.y -= 90.0f : angle.y -= 270.0f;
-			break;
-		case AntiAimYaw_Real::BACKJITTER:
-			angle.y -= 180;
-			random = rand() % 100;
-			maxJitter = rand() % (85 - 70 + 1) + 70;
-			temp = maxJitter - (rand() % maxJitter);
-			if (random < 35 + (rand() % 15))
-				angle.y -= temp;
-			else if (random < 85 + (rand() % 15 ))
-				angle.y += temp;
-			break;
-		case AntiAimYaw_Real::SIDE:
-			yFlip ? angle.y += 90.f : angle.y -= 90.0f;
-			break;
 		case AntiAimYaw_Real::BACKWARDS:
 			angle.y -= 180.0f;
 			break;
 		case AntiAimYaw_Real::FORWARDS:
 			angle.y -= 0.0f;
 			break;
-		case AntiAimYaw_Real::LEFT:
-			angle.y += 90.0f;
-			break;
-		case AntiAimYaw_Real::RIGHT:
-			angle.y -= 90.0f;
-			break;
-		case AntiAimYaw_Real::STATICAA:
-			angle.y = 0.0f;
-			break;
-		case AntiAimYaw_Real::STATICJITTER:
-			trigger += 15.0f;
-			angle.y = trigger > 50.0f ? 150.0f : -150.0f;
-
-			if (trigger > 100.0f)
-				trigger = 0.0f;
-			break;
-		case AntiAimYaw_Real::STATICSMALLJITTER:
-			trigger += 15.0f;
-			angle.y = trigger > 50.0f ? -30.0f : 30.0f;
-
-			if (trigger > 100.0f)
-				trigger = 0.0f;
-			break;
-		case AntiAimYaw_Real::FOLLOW:
-			if(Aimbot::curtarget)
-				test = Aimbot::curtarget->GetVecOrigin();
-			else if(tmp = GetClosestPlayer(); tmp)
-				test = tmp->GetVecOrigin();
-			if (test != Vector(0, 0, 0))
-				angle.y = Math::CalcAngle(((C_BasePlayer*)entityList->GetClientEntity(engine->GetLocalPlayer()))->GetEyePosition(), test).y;
-			// angle.y = followangle.y;
-			break;
-		case AntiAimYaw_Real::LISP:
-			clamp = false;
-			yFlip ? angle.y += 323210000.0f : angle.y -= 323210000.0f;
-			break;
-		case AntiAimYaw_Real::LISP_SIDE:
-			clamp = false;
-			temp = angle.y + 90.0f;
-			temp_qangle = QAngle(0.0f, temp, 0.0f);
-			Math::NormalizeAngles(temp_qangle);
-			temp = temp_qangle.y;
-
-			if (temp > -45.0f)
-				temp < 0.0f ? temp = -90.0f : temp < 45.0f ? temp = 90.0f : temp = temp;
-
-			temp += 1800000.0f;
-			angle.y = temp;
-			break;
-		case AntiAimYaw_Real::LISP_JITTER:
-			clamp = false;
-			temp = angle.y - 155.0f;
-
-			if (globalVars->tickcount % 2)
-			{
-				temp = angle.y + 58.0f;
-				temp += 1800000.0f;
-			}
-
-			angle.y = temp;
-			break;
-		case AntiAimYaw_Real::ANGEL_BACKWARD:
-			clamp = false;
-			angle.y += 36000180.0f;
-			break;
-		case AntiAimYaw_Real::ANGEL_INVERSE:
-			clamp = false;
-			angle.y = 36000180.0f;
-			break;
-		case AntiAimYaw_Real::LOWERBODY:
-			angle.y = *((C_BasePlayer*)entityList->GetClientEntity(engine->GetLocalPlayer()))->GetLowerBodyYawTarget() + rand()%35 + 165;
-			break;
-		case AntiAimYaw_Real::ANGEL_SPIN:
-			clamp = false;
-			factor = (globalVars->curtime * 5000.0f);
-			angle.y = factor + 36000000.0f;
-			break;
-		case AntiAimYaw_Real::CASUAL:
-			yFlip ? angle.y -= 35.0f : angle.y += 35.0f;
-			break;
-		case AntiAimYaw_Real::LBYONGROUND:
-			static C_BasePlayer* player = ((C_BasePlayer*) entityList->GetClientEntity(engine->GetLocalPlayer()));
-			if (player->GetFlags() & FL_ONGROUND)
-				angle.y = *((C_BasePlayer*)entityList->GetClientEntity(engine->GetLocalPlayer()))->GetLowerBodyYawTarget() + rand()%35 + 165;
-			else
-			{
-				static int aimType = rand() % 4;
-				switch (aimType)
-				{
-					case 1:
-						yFlip ? angle.y += 90.f : angle.y -= 90.0f;
-						break;
-					case 2:
-						yFlip ? angle.y -= 120.0f : angle.y -= 210.0f;
-						break;
-					case 3:
-						factor =  360.0 / M_PHI;
-						factor *= 25;
-						angle.y = fmodf(globalVars->curtime * factor, 360.0);
-						break;
-					default:
-						angle.y -= 180.0f;
-				}
-			}
-			break;
 		default:
 			angle.y -= 0.0f;
 			break;
 	}
+
+	switch(fake) {
+	    case AntiAimYaw_Fake::MEGALEAN:
+		if (Settings::AntiAim::Fake::leanJerk) {
+		    angle.z = leanJerking ? Settings::AntiAim::Fake::maxLean : -1 * Settings::AntiAim::Fake::maxLean;
+		    leanJerking = !leanJerking;
+		} else {
+		    angle.z = Settings::AntiAim::Fake::maxLean;
+		}
+		break;
+	}
+
 	angle.y += Settings::AntiAim::Yaw::offset;
 	if (Settings::AntiAim::Yaw::addDesyncEnabled)
 		angle.y += (manualswitch ? maxDelta : -maxDelta) * (Settings::AntiAim::Yaw::addDesyncOffset / 100);
@@ -420,24 +304,6 @@ static void DoAntiAimX(QAngle& angle, bool bFlip, bool& clamp)
             break;
         case AntiAimType_X::FRONT:
             angle.x = 0.0f;
-            break;
-        case AntiAimType_X::STATIC_UP_FAKE:
-            angle.x = bFlip ? 89.0f : -89.0f;
-            break;
-        case AntiAimType_X::STATIC_DOWN_FAKE:
-            angle.x = bFlip ? -89.0f : 89.0f;
-            break;
-        case AntiAimType_X::LISP_DOWN:
-            clamp = false;
-            angle.x = 1800089.0f;
-            break;
-        case AntiAimType_X::ANGEL_DOWN:
-            clamp = false;
-            angle.x = 36000088.0f;
-            break;
-        case AntiAimType_X::ANGEL_UP:
-            clamp = false;
-            angle.x = 35999912.0f;
             break;
         default:
             break;
@@ -530,7 +396,7 @@ void AntiAim::CreateMove(CUserCmd* cmd)
     static bool bSend = true;
     bSend = !bSend;
 
-    bool should_clamp = true;
+    bool should_clamp = false;
 
     bool needToFlick = false;
     float tempangle = 0.f;
@@ -583,8 +449,8 @@ void AntiAim::CreateMove(CUserCmd* cmd)
         	CreateMove::sendPacket = false;
 
         if (needToFlick){
-        CreateMove::sendPacket = false;
-        angle.y += tempangle;
+	    CreateMove::sendPacket = false;
+	    angle.y += tempangle;
     	}
 
         if (Settings::AntiAim::HeadEdge::enabled && edging_head && !bSend)
@@ -613,12 +479,6 @@ void AntiAim::CreateMove(CUserCmd* cmd)
     {
 	    DoAntiAimFake(angle, animState);
         Math::NormalizeAngles(angle);
-    }
-
-    if (!ValveDSCheck::forceUT && (*csGameRules) && (*csGameRules)->IsValveDS())
-    {
-        if (Settings::AntiAim::Pitch::type >= AntiAimType_X::STATIC_UP_FAKE)
-            Settings::AntiAim::Pitch::type = AntiAimType_X::STATIC_UP;
     }
 
     if (Settings::AntiAim::Pitch::enabled)

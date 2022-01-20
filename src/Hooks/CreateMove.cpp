@@ -3,6 +3,7 @@
 #include "../interfaces.h"
 
 #include "../Hacks/bhop.h"
+#include "../Hacks/chams.h"
 #include "../Hacks/noduckcooldown.h"
 #include "../Hacks/lagcomp.h"
 #include "../Hacks/autostrafe.h"
@@ -25,6 +26,8 @@
 #include "../Hacks/thirdperson.h"
 #include "../Hacks/nofall.h"
 #include "../Hacks/keyfix.h"
+#include "../Hacks/noCSM.h"
+#include "../Hacks/slowwalk.hpp"
 
 bool CreateMove::sendPacket = true;
 QAngle CreateMove::lastTickViewAngles = QAngle(0, 0, 0);
@@ -43,35 +46,40 @@ bool Hooks::CreateMove(void* thisptr, float flInputSampleTime, CUserCmd* cmd)
         bool *sendPacket = ((*(bool **)rbp) - 0x18);
         CreateMove::sendPacket = true;
 
-		/* run code that affects movement before prediction */
-		BHop::CreateMove(cmd);
-		NoDuckCooldown::CreateMove(cmd);
-		AutoStrafe::CreateMove(cmd);
-		ShowRanks::CreateMove(cmd);
-		AutoDefuse::CreateMove(cmd);
-		JumpThrow::CreateMove(cmd);
-		GrenadeHelper::CreateMove(cmd);
-        GrenadePrediction::CreateMove( cmd );
-        EdgeJump::PrePredictionCreateMove(cmd);
-		Autoblock::CreateMove(cmd);
-		NoFall::PrePredictionCreateMove(cmd);
+	/* run code that affects movement before prediction */
+	BHop::CreateMove(cmd);
+	NoDuckCooldown::CreateMove(cmd);
+	NoCSM::CreateMove(cmd);
+	AutoStrafe::CreateMove(cmd);
+	ShowRanks::CreateMove(cmd);
+	AutoDefuse::CreateMove(cmd);
+	JumpThrow::CreateMove(cmd);
+	GrenadeHelper::CreateMove(cmd);
+	GrenadePrediction::CreateMove( cmd );
+	EdgeJump::PrePredictionCreateMove(cmd);
+	Autoblock::CreateMove(cmd);
+	NoFall::PrePredictionCreateMove(cmd);
 
-		PredictionSystem::StartPrediction(cmd);
-			Aimbot::CreateMove(cmd);
-			Triggerbot::CreateMove(cmd);
-			AutoKnife::CreateMove(cmd);
-			Airstuck::CreateMove(cmd);
-			LagComp::CreateMove(cmd);
-			FakeLag::CreateMove(cmd);
-			AntiAim::CreateMove(cmd);
-			ESP::CreateMove(cmd);
-			TracerEffect::CreateMove(cmd);
-            ThirdPerson::CreateMove(cmd);
-            KeyFix::CreateMove(cmd);
-		PredictionSystem::EndPrediction();
+	PredictionSystem::StartPrediction(cmd);
 
-		EdgeJump::PostPredictionCreateMove(cmd);
-		NoFall::PostPredictionCreateMove(cmd);
+	SlowWalk::CreateMove(cmd);
+
+	Aimbot::CreateMove(cmd);
+	Triggerbot::CreateMove(cmd);
+	AutoKnife::CreateMove(cmd);
+	Airstuck::CreateMove(cmd);
+	LagComp::CreateMove(cmd);
+	FakeLag::CreateMove(cmd);
+	AntiAim::CreateMove(cmd);
+	ESP::CreateMove(cmd);
+	TracerEffect::CreateMove(cmd);
+	ThirdPerson::CreateMove(cmd);
+	Chams::CreateMove(cmd);
+	KeyFix::CreateMove(cmd);
+	PredictionSystem::EndPrediction();
+
+	EdgeJump::PostPredictionCreateMove(cmd);
+	NoFall::PostPredictionCreateMove(cmd);
 
         *sendPacket = CreateMove::sendPacket;
 

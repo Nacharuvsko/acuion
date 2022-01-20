@@ -177,28 +177,8 @@ enum class AntiAimYaw_Preset : int
 
 enum class AntiAimYaw_Real : int
 {
-	SPIN_SLOW,
-	SPIN_FAST,
-	JITTER,
-	BACKJITTER,
-	SIDE,
 	BACKWARDS,
-	FORWARDS,
-	LEFT,
-	RIGHT,
-	STATICAA,
-	STATICJITTER,
-	STATICSMALLJITTER,
-	FOLLOW,
-	CASUAL,
-	LISP,
-	LISP_SIDE,
-	LISP_JITTER,
-	ANGEL_BACKWARD,
-	ANGEL_INVERSE,
-	ANGEL_SPIN,
-	LOWERBODY,
-	LBYONGROUND,
+	FORWARDS
 };
 
 enum class AntiAimYaw_Fake: int
@@ -206,7 +186,8 @@ enum class AntiAimYaw_Fake: int
 	STATIC_LEFT,
 	STATIC_RIGHT,
 	JITTER,
-	MANUAL
+	MANUAL,
+    	MEGALEAN
 };
 
 enum class AntiAimType_X : int
@@ -215,11 +196,14 @@ enum class AntiAimType_X : int
     STATIC_DOWN,
     DANCE,
     FRONT,
-    STATIC_UP_FAKE,
-    STATIC_DOWN_FAKE,
-    LISP_DOWN,
-    ANGEL_DOWN,
-    ANGEL_UP,
+};
+
+struct Indicator_t
+{
+
+    ImColor color;
+    std::string text;
+
 };
 
 struct AimbotWeapon_t
@@ -227,8 +211,8 @@ struct AimbotWeapon_t
 	bool enabled,
 		 silent,
 		 friendly,
-		 closestHitbox,
-	    	 engageLock,
+		 closestBone,
+	     engageLock,
 		 engageLockTR,
 		 aimkeyOnly,
 		 smoothEnabled,
@@ -267,18 +251,23 @@ struct AimbotWeapon_t
 		  rcsAmountY = 2.0f,
 		  autoWallValue = 10.0f,
 		  spreadLimit = 1.0f,
+	      	  minDamage = 69.0f,
+	      	  minDamageOverride = 34.0f,
 		  hitChance = 80.0f;
-	HitboxFlags desiredHitboxes;
+	bool desiredBones[31];
 
 	bool operator == (const AimbotWeapon_t& another) const
 	{
-		if(this->desiredHitboxes != another.desiredHitboxes)
-			return false;
+		for (int bone = BONE_PELVIS; bone <= BONE_RIGHT_SOLE; bone++)
+		{
+			if( this->desiredBones[bone] != another.desiredBones[bone] )
+				return false;
+		}
 
 		return this->enabled == another.enabled &&
 			this->silent == another.silent &&
 			this->friendly == another.friendly &&
-			this->closestHitbox == another.closestHitbox &&
+			this->closestBone == another.closestBone &&
 			this->engageLock == another.engageLock &&
 			this->engageLockTR == another.engageLockTR &&
 			this->engageLockTTR == another.engageLockTTR &&
@@ -443,6 +432,12 @@ namespace Settings
 				inline int size = 12;
 				inline int flags = (int)FontFlags::FONTFLAG_OUTLINE;
 			}
+			namespace Indicators
+			{
+				inline char* family = (char*)"Arial";
+				inline int size = 25;
+				inline int flags = (int) FontFlags::FONTFLAG_ADDITIVE;
+			}
 		}
 	}
     /* Default Aimbot Settings */
@@ -479,8 +474,13 @@ namespace Settings
 			inline bool enabled = false;
             inline float fov = 180.0f;
             inline bool realDistance = false;
-            inline bool closestHitbox = false;
-            inline HitboxFlags desiredHitboxes = HitboxFlags::HEAD;
+            inline bool closestBone = false;
+            inline bool desiredBones[] = {true, true, true, true, true, true, true, // center mass
+                                          false, false, false, false, false, false, false, // left arm
+                                          false, false, false, false, false, false, false, // right arm
+                                          false, false, false, false, false, // left leg
+                                          false, false, false, false, false  // right leg
+            };
             inline bool engageLock = false;
             inline bool engageLockTR = false; // Target Reacquisition ( re-target after getting a kill when spraying ).
             inline int engageLockTTR = 700; // Time to Target Reacquisition in ms
@@ -628,6 +628,15 @@ namespace Settings
             inline AntiAimYaw_Preset type = AntiAimYaw_Preset::DIY;
         }
 
+
+
+	namespace Slowwalk
+	{
+	    inline bool enabled = false;
+	    inline float Speed = 0.f;
+	    inline ButtonCode_t Key = ButtonCode_t::KEY_Z;
+	}
+
         namespace Yaw
         {
             inline bool enabled = false;
@@ -639,19 +648,21 @@ namespace Settings
 
 		namespace Fake
 		{
-            inline bool enabled = false;
-            inline AntiAimYaw_Fake type = AntiAimYaw_Fake::JITTER;
+		    inline bool enabled = false;
+		    inline AntiAimYaw_Fake type = AntiAimYaw_Fake::JITTER;
+		    inline float maxLean = 45.f;
+		    inline bool leanJerk = false;
 		}
 		
 		namespace RageDesyncFix
 		{
-            inline bool enabled = false;
+		    inline bool enabled = false;
 		}
 
         namespace Pitch
         {
-            	inline bool enabled = false;
-          	inline AntiAimType_X type = AntiAimType_X::STATIC_DOWN;
+            inline bool enabled = false;
+            inline AntiAimType_X type = AntiAimType_X::STATIC_DOWN;
         }
 
         namespace HeadEdge
@@ -669,8 +680,6 @@ namespace Settings
 	namespace Resolver
 	{
 		inline bool resolveAll = false;
-		inline bool forceYaw = false;
-		inline float angle = 180.0f;
 	}
 
 	namespace ESP
@@ -704,6 +713,8 @@ namespace Settings
         inline ColorVar chargeColor = ImColor(205, 32, 31, 255);
         inline ColorVar allyInfoColor = ImColor(255, 255, 255, 255);
         inline ColorVar enemyInfoColor = ImColor(255, 255, 255, 255);
+
+		inline bool drawAATraces;
 
 		namespace Glow
 		{
@@ -744,6 +755,7 @@ namespace Settings
 			inline bool rank = false;
 			inline bool health = false;
 			inline bool armor = false;
+			inline bool lagcomp = false;
 			inline bool weapon = false;
 			inline bool scoped = false;
 			inline bool reloading = false;
@@ -1088,6 +1100,8 @@ namespace Settings
                 { ItemDefinitionIndex::WEAPON_KNIFE, { ItemDefinitionIndex::WEAPON_KNIFE_M9_BAYONET, -1, -1, -1, -1, -1, "" } },
                 { ItemDefinitionIndex::GLOVE_CT_SIDE, { ItemDefinitionIndex::GLOVE_SPECIALIST, 10006, 0.0005f, -1, -1, -1, "" } },
                 { ItemDefinitionIndex::GLOVE_T_SIDE, { ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND, 10006, 0.0005f, -1, -1, -1, "" } },
+		{ ItemDefinitionIndex::GLOVE_HYDRA, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
+		{ ItemDefinitionIndex::GLOVE_STUDDED_BROKENFANG, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_SPORTY, { ItemDefinitionIndex::INVALID, 10018, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_SLICK, { ItemDefinitionIndex::INVALID, 10013, 0.0005f, -1, -1, -1, ""} },
@@ -1116,7 +1130,9 @@ namespace Settings
                 { ItemDefinitionIndex::WEAPON_AK47 /*WeaponID*/, { ItemDefinitionIndex::INVALID /*itemDefinitionIndex*/, 524 /*fallbackPaintKit*/, 0.0005f /*fallbackWear*/, -1 /*fallbackSeed*/, 1337/*fallbackStatTrak*/, -1/*fallbackEntityQuality*/, "TestTux"/*customName*/ } },
                 { ItemDefinitionIndex::WEAPON_KNIFE_T, { ItemDefinitionIndex::WEAPON_KNIFE_KARAMBIT, -1, -1, -1, -1, -1, "" } },
                 { ItemDefinitionIndex::GLOVE_T_SIDE, { ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND, 10006, 0.0005f, -1, -1, -1, "" } },
-                { ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
+		{ ItemDefinitionIndex::GLOVE_HYDRA, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
+		{ ItemDefinitionIndex::GLOVE_STUDDED_BROKENFANG, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
+		{ ItemDefinitionIndex::GLOVE_STUDDED_BLOODHOUND, { ItemDefinitionIndex::INVALID, 10006, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_SPORTY, { ItemDefinitionIndex::INVALID, 10018, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_SLICK, { ItemDefinitionIndex::INVALID, 10013, 0.0005f, -1, -1, -1, ""} },
                 { ItemDefinitionIndex::GLOVE_MOTORCYCLE, { ItemDefinitionIndex::INVALID, 10024, 0.0005f, -1, -1, -1, ""} },
@@ -1277,12 +1293,22 @@ namespace Settings
 		inline bool enabled = false;
 	}
 
+	namespace NoCSM
+	{
+	    	inline bool enabled = false;
+	}
+
 	namespace DisablePostProcessing
 	{
 		inline bool enabled = false;
 	}
 	
 	namespace Skateboarding
+	{
+		inline bool enabled = false;
+	}
+	
+	namespace AutoDisconnect
 	{
 		inline bool enabled = false;
 	}
@@ -1335,6 +1361,16 @@ namespace Settings
 	{
 		inline bool enabled = false;
 	}
+
+
+	namespace Indicators
+	{
+	    inline bool enabled = false;
+	    inline bool aWall,
+		damageOverride,
+		fakeLag;
+	}
+
     namespace Debug
     {
         namespace AutoWall

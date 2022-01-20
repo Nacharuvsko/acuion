@@ -1,17 +1,16 @@
 #pragma once
 
-#include "../SDK/IGameEvent.h"
-#include "../SDK/definitions.h"
-#include <cstdint>
 #include <vector>
+#include <cstdint>
+#include "../SDK/definitions.h"
+#include "../SDK/IGameEvent.h"
 
 namespace Resolver
 {
+	extern std::vector<int64_t> Players;
 
-extern std::vector<int64_t> Players;
-
-//Hooks
-void FrameStageNotify(ClientFrameStage_t stage); // This is where the resolver happens.
-void FireGameEvent(IGameEvent *event);			 // Strangely, I never see this getting called.
-
-} // namespace Resolver
+	//Hooks
+	void FrameStageNotify(ClientFrameStage_t stage);
+	void PostFrameStageNotify(ClientFrameStage_t stage);
+	void FireGameEvent(IGameEvent* event);
+}

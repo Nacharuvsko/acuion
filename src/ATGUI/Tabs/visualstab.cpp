@@ -11,19 +11,19 @@
 
 void Visuals::RenderTab()
 {
-	const char* BackendTypes[] = { "Surface (Valve)", "ImGUI (Custom/Faster)" };
-	const char* BoxTypes[] = { "Flat 2D", "Frame 2D", "Box 3D", "Hitboxes" };
-	const char* SpriteTypes[] = { "Tux" };
-	const char* TracerTypes[] = { "Bottom", "Cursor" };
-	const char* BarTypes[] = { "Vertical Left", "Vertical Right", "Horizontal Below", "Horizontal Above", "Interwebz" };
-	const char* BarColorTypes[] = { "Static", "Health Based" };
-	const char* TeamColorTypes[] = { "Absolute", "Relative" };
-	const char* ChamsTypes[] = { "Normal", "Normal - XQZ", "Flat", "Flat - XQZ" };
-	const char* ArmsTypes[] = { "Default", "Wireframe", "None" };
-	const char* WeaponTypes[] = { "Default", "Wireframe", "None" };
-	const char* SmokeTypes[] = { "Wireframe", "None" };
-	const char* Sounds[] = { "None", "SpongeBob", "Half life", "Half life 2", "Half life 3", "Half life 4", "BB Gun Bell", "Dopamine", "Wub", "Pedo Yes!", "Meme", "Error", "Orchestral" };
-	const char* SkyBoxes[] = {
+	static const char* BackendTypes[] = { "Surface (Valve)", "ImGUI (Custom/Faster)" };
+	static const char* BoxTypes[] = { "Flat 2D", "Frame 2D", "Box 3D", "Hitboxes" };
+	static const char* SpriteTypes[] = { "Tux" };
+	static const char* TracerTypes[] = { "Bottom", "Cursor" };
+	static const char* BarTypes[] = { "Vertical Left", "Vertical Right", "Horizontal Below", "Horizontal Above", "Interwebz" };
+	static const char* BarColorTypes[] = { "Static", "Health Based" };
+	static const char* TeamColorTypes[] = { "Absolute", "Relative" };
+	static const char* ChamsTypes[] = { "Normal", "Normal - XQZ", "Flat", "Flat - XQZ" };
+	static const char* ArmsTypes[] = { "Default", "Wireframe", "None" };
+	static const char* WeaponTypes[] = { "Default", "Wireframe", "None" };
+	static const char* SmokeTypes[] = { "Wireframe", "None" };
+	static const char* Sounds[] = { "None", "SpongeBob", "Half life", "Half life 2", "Half life 3", "Half life 4", "BB Gun Bell", "Dopamine", "Wub", "Pedo Yes!", "Meme", "Error", "Orchestral" };
+	static const char* SkyBoxes[] = {
 			"cs_baggage_skybox_", // 0
 			"cs_tibet",
 			"embassy",
@@ -48,7 +48,7 @@ void Visuals::RenderTab()
 			"vertigoblue_hdr",
 			"vietnam" // 21
 	};
-	const char *tracerEffectNames[] = {
+	static const char *tracerEffectNames[] = {
 			"Assault Rifle", // 0
 			"Pistol",
 			"SMG",
@@ -210,6 +210,7 @@ void Visuals::RenderTab()
 					ImGui::Checkbox(XORSTR("Health"), &Settings::ESP::Info::health);
 					ImGui::PopID();
 					ImGui::Checkbox(XORSTR("Armor"), &Settings::ESP::Info::armor);
+					ImGui::Checkbox(XORSTR("LagCompensation"), &Settings::ESP::Info::lagcomp);
 					ImGui::Checkbox(XORSTR("Scoped"), &Settings::ESP::Info::scoped);
 					ImGui::Checkbox(XORSTR("Flashed"), &Settings::ESP::Info::flashed);
 					ImGui::Checkbox(XORSTR("Defuse Kit"), &Settings::ESP::Info::hasDefuser);
@@ -273,6 +274,20 @@ void Visuals::RenderTab()
 				}
 				ImGui::Columns(1);
 
+
+				ImGui::Separator();
+				ImGui::Text(XORSTR("Indicators"));
+				ImGui::Separator();
+
+				ImGui::Columns(2, nullptr, false);
+				{
+				    ImGui::Checkbox(XORSTR("Indicators"), &Settings::Indicators::enabled);
+
+				    ImGui::Checkbox(XORSTR("AutoWall"), &Settings::Indicators::aWall);
+				    ImGui::Checkbox(XORSTR("Fake Lag"), &Settings::Indicators::fakeLag);
+				    ImGui::Checkbox(XORSTR("Damage Override"), &Settings::Indicators::damageOverride);
+				}
+
 				ImGui::Separator();
 				ImGui::Text(XORSTR("Other"));
 				ImGui::Separator();
@@ -283,6 +298,7 @@ void Visuals::RenderTab()
 					ImGui::Checkbox(XORSTR("Weapons"), &Settings::ESP::Chams::Weapon::enabled);
 					ImGui::Checkbox(XORSTR("No View Punch"), &Settings::View::NoViewPunch::enabled);
 					ImGui::Checkbox(XORSTR("Grenade Prediction"), &Settings::GrenadePrediction::enabled);
+					ImGui::Checkbox(XORSTR("Draw AA Trace"), &Settings::ESP::drawAATraces);
 					//{{{ Material config
 					if ( ImGui::Button( XORSTR( "Material Config" ), ImVec2( -1, 0 ) ) )
 						ImGui::OpenPopup( XORSTR( "##MaterialConfigWindow" ) );
@@ -476,6 +492,8 @@ void Visuals::RenderTab()
 					ImGui::Checkbox(XORSTR("Weapons"), &Settings::ESP::Filters::weapons);
 					ImGui::Checkbox(XORSTR("Throwables"), &Settings::ESP::Filters::throwables);
 					ImGui::Checkbox(XORSTR("Entity Glow"), &Settings::ESP::Glow::enabled);
+					ImGui::Checkbox( XORSTR("CSM Disabler"), &Settings::NoCSM::enabled );
+				    	SetTooltip( XORSTR( "Disables the game's Cascading Shadow Maps.\nCan Add around 30fps, but shadows look worse.\nBreaks skybox on re-enable." ) );
 				}
 				ImGui::NextColumn();
 				{
