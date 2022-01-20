@@ -6,6 +6,7 @@
 #include "../atgui.h"
 #include "../../Hacks/tracereffect.h"
 #include "../../Hacks/materialconfig.h"
+#include "../Hooks/hooks.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"
 
@@ -283,10 +284,23 @@ void Visuals::RenderTab()
 				{
 				    ImGui::Checkbox(XORSTR("Indicators"), &Settings::Indicators::enabled);
 
-				    ImGui::Checkbox(XORSTR("AutoWall"), &Settings::Indicators::aWall);
+
+
 				    ImGui::Checkbox(XORSTR("Fake Lag"), &Settings::Indicators::fakeLag);
-				    ImGui::Checkbox(XORSTR("Damage Override"), &Settings::Indicators::damageOverride);
+				    ImGui::Checkbox(XORSTR("Trigger"), &Settings::Indicators::trigger);
+				    ImGui::Checkbox(XORSTR("Slowwalk"), &Settings::Indicators::slowWalk);
 				}
+
+				ImGui::NextColumn();
+				{
+				    ImGui::PushItemWidth(-1);
+				    ImGui::SliderInt(XORSTR("##Indicators X"), &Settings::Indicators::posX, 0, Paint::engineWidth, XORSTR("X: %0.f"));
+				    ImGui::SliderInt(XORSTR("##Indicators Y"), &Settings::Indicators::posY, 0, Paint::engineHeight, XORSTR("Y: %0.f"));
+				    ImGui::PopItemWidth();
+				}
+
+				ImGui::Columns(1);
+
 
 				ImGui::Separator();
 				ImGui::Text(XORSTR("Other"));

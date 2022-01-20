@@ -39,7 +39,7 @@ namespace Hooker
 	void FindPanelArrayOffset();
 	void FindPlayerAnimStateOffset();
 	void FindPlayerAnimStateFunctions();
-    void FindPlayerAnimOverlayOffset();
+	void FindPlayerAnimOverlayOffset();
 	void FindSequenceActivity();
 	void FindAbsFunctions();
 	void FindItemSystem();

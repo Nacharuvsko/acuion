@@ -1,6 +1,7 @@
 #pragma once
 
 #include <string>
+#include <utility>
 #include <vector>
 #include <unordered_map>
 #include "ImGUI/imgui.h"
@@ -201,8 +202,20 @@ enum class AntiAimType_X : int
 struct Indicator_t
 {
 
-    ImColor color;
-    std::string text;
+    Color color;
+    const char* text;
+
+public:
+
+    Indicator_t(Color c, const char* str) {
+	this->color = c;
+	this->text = std::move(str);
+    }
+
+    Indicator_t(Color c, const std::string& str) {
+	this->color = c;
+	this->text = str.c_str();
+    }
 
 };
 
@@ -434,9 +447,9 @@ namespace Settings
 			}
 			namespace Indicators
 			{
-				inline char* family = (char*)"Arial";
-				inline int size = 25;
-				inline int flags = (int) FontFlags::FONTFLAG_ADDITIVE;
+				inline char* family = (char*)"Arial Bold";
+				inline int size = 36;
+				inline int flags = (int) FontFlags::FONTFLAG_ANTIALIAS;
 			}
 		}
 	}
@@ -1366,9 +1379,12 @@ namespace Settings
 	namespace Indicators
 	{
 	    inline bool enabled = false;
-	    inline bool aWall,
-		damageOverride,
-		fakeLag;
+	    inline bool fakeLag,
+			slowWalk,
+			trigger;
+
+	    inline int posX = 5;
+	    inline int posY = 10;
 	}
 
     namespace Debug
