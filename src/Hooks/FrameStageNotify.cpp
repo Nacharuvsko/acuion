@@ -2,17 +2,17 @@
 
 #include "../interfaces.h"
 
-#include "../Hacks/customglow.h"
-#include "../Hacks/chams.h"
-#include "../Hacks/skinchanger.h"
-#include "../Hacks/noflash.h"
-#include "../Hacks/view.h"
-#include "../Hacks/resolver.h"
-#include "../Hacks/lagcomp.h"
-#include "../Hacks/skybox.h"
-#include "../Hacks/asuswalls.h"
-#include "../Hacks/nosmoke.h"
-#include "../Hacks/thirdperson.h"
+#include "../Hacks/visual/customglow.h"
+#include "../Hacks/visual/chams.h"
+#include "../Hacks/misc/skinchanger.h"
+#include "../Hacks/visual/noflash.h"
+#include "../Hacks/visual/view.h"
+#include "../Hacks/aimbot/resolver.h"
+#include "../Hacks/aimbot/lagcomp.h"
+#include "../Hacks/visual/skybox.h"
+#include "../Hacks/visual/asuswalls.h"
+#include "../Hacks/visual/nosmoke.h"
+#include "../Hacks/misc/thirdperson.h"
 
 typedef void (*FrameStageNotifyFn) (void*, ClientFrameStage_t);
 

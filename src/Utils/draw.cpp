@@ -4,7 +4,7 @@
 #include "../interfaces.h"
 #include <SDL2/SDL.h>
 #include "../ImGUI/imgui_internal.h"
-#include "../Hacks/esp.h"
+#include "../Hacks/visual/esp.h"
 
 #include <mutex>
 

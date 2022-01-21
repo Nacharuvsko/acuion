@@ -4,7 +4,7 @@
 #include "../../interfaces.h"
 #include "../../Utils/xorstring.h"
 #include "../../settings.h"
-#include "../../Hacks/valvedscheck.h"
+#include "../../Hacks/misc/valvedscheck.h"
 #include "../atgui.h"
 #include "../../ImGUI/imgui_internal.h"
 

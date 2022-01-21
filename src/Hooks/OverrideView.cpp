@@ -3,9 +3,9 @@
 #include "../interfaces.h"
 #include "../settings.h"
 
-#include "../Hacks/fovchanger.h"
-#include "../Hacks/thirdperson.h"
-#include "../Hacks/grenadeprediction.h"
+#include "../Hacks/visual/fovchanger.h"
+#include "../Hacks/misc/thirdperson.h"
+#include "../Hacks/visual/grenadeprediction.h"
 
 float OverrideView::currentFOV = 90.0f;
 

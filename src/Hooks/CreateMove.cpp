@@ -2,32 +2,31 @@
 
 #include "../interfaces.h"
 
-#include "../Hacks/bhop.h"
-#include "../Hacks/chams.h"
-#include "../Hacks/noduckcooldown.h"
-#include "../Hacks/lagcomp.h"
-#include "../Hacks/autostrafe.h"
-#include "../Hacks/showranks.h"
-#include "../Hacks/autodefuse.h"
-#include "../Hacks/jumpthrow.h"
-#include "../Hacks/grenadehelper.h"
-#include "../Hacks/grenadeprediction.h"
-#include "../Hacks/edgejump.h"
-#include "../Hacks/autoblock.h"
-#include "../Hacks/predictionsystem.h"
-#include "../Hacks/aimbot.h"
-#include "../Hacks/triggerbot.h"
-#include "../Hacks/autoknife.h"
-#include "../Hacks/antiaim.h"
-#include "../Hacks/airstuck.h"
-#include "../Hacks/fakelag.h"
-#include "../Hacks/esp.h"
-#include "../Hacks/tracereffect.h"
-#include "../Hacks/thirdperson.h"
-#include "../Hacks/nofall.h"
-#include "../Hacks/keyfix.h"
-#include "../Hacks/noCSM.h"
-#include "../Hacks/slowwalk.hpp"
+#include "../Hacks/misc/bhop.h"
+#include "../Hacks/visual/chams.h"
+#include "../Hacks/misc/noduckcooldown.h"
+#include "../Hacks/aimbot/lagcomp.h"
+#include "../Hacks/misc/autostrafe.h"
+#include "../Hacks/misc/showranks.h"
+#include "../Hacks/misc/autodefuse.h"
+#include "../Hacks/misc/jumpthrow.h"
+#include "../Hacks/misc/grenadehelper.h"
+#include "../Hacks/visual/grenadeprediction.h"
+#include "../Hacks/misc/edgejump.h"
+#include "../Hacks/misc/autoblock.h"
+#include "../Hacks/aimbot/predictionsystem.h"
+#include "../Hacks/aimbot/aimbot.h"
+#include "../Hacks/aimbot/triggerbot.h"
+#include "../Hacks/misc/autoknife.h"
+#include "../Hacks/aimbot/antiaim.h"
+#include "../Hacks/misc/fakelag.h"
+#include "../Hacks/visual/esp.h"
+#include "../Hacks/visual/tracereffect.h"
+#include "../Hacks/misc/thirdperson.h"
+#include "../Hacks/misc/nofall.h"
+#include "../Hacks/misc/keyfix.h"
+#include "../Hacks/visual/noCSM.h"
+#include "../Hacks/misc/slowwalk.hpp"
 
 bool CreateMove::sendPacket = true;
 QAngle CreateMove::lastTickViewAngles = QAngle(0, 0, 0);
@@ -67,7 +66,6 @@ bool Hooks::CreateMove(void* thisptr, float flInputSampleTime, CUserCmd* cmd)
 	Aimbot::CreateMove(cmd);
 	Triggerbot::CreateMove(cmd);
 	AutoKnife::CreateMove(cmd);
-	Airstuck::CreateMove(cmd);
 	LagComp::CreateMove(cmd);
 	FakeLag::CreateMove(cmd);
 	AntiAim::CreateMove(cmd);

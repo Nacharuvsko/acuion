@@ -7,7 +7,7 @@
 #include "../../Utils/util.h"
 #include "../../Utils/util_items.h"
 #include "../../Utils/skins.h"
-#include "../../Hacks/skinchanger.h"
+#include "../../Hacks/misc/skinchanger.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"
 

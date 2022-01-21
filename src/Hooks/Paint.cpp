@@ -5,15 +5,16 @@
 #include "../Utils/draw.h"
 #include "../fonts.h"
 
-#include "../Hacks/esp.h"
-#include "../Hacks/dlights.h"
-#include "../Hacks/grenadehelper.h"
-#include "../Hacks/grenadeprediction.h"
-#include "../Hacks/recoilcrosshair.h"
-#include "../Hacks/hitmarkers.h"
-#include "../Hacks/indicators.h"
-#include "../Hacks/eventlog.h"
-#include "../Hacks/angleindicator.h"
+#include "../Hacks/visual/esp.h"
+#include "../Hacks/visual/dlights.h"
+#include "../Hacks/misc/grenadehelper.h"
+#include "../Hacks/visual/grenadeprediction.h"
+#include "../Hacks/visual/recoilcrosshair.h"
+#include "../Hacks/misc/hitmarkers.h"
+#include "../Hacks/misc/watermark.h"
+#include "../Hacks/visual/indicators.h"
+#include "../Hacks/misc/eventlog.h"
+#include "../Hacks/visual/angleindicator.h"
 
 // #include <mutex>
 
@@ -49,6 +50,7 @@ void Hooks::Paint(void* thisptr, PaintMode_t mode)
         /* These functions make drawRequests */
         Dlights::Paint();
         ESP::Paint();
+        Watermark::Paint();
         GrenadeHelper::Paint();
         Recoilcrosshair::Paint();
         Hitmarkers::Paint();

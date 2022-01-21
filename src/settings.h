@@ -947,6 +947,11 @@ namespace Settings
 		inline bool enabled = false;
 		inline float radius = 500.0f;
 	}
+
+	namespace AntiUntrusted
+	{
+	    	inline bool enabled = false;
+	}
 	
 	namespace Eventlog
 	{

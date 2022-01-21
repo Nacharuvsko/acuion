@@ -57,5 +57,5 @@ include_directories("${CMAKE_SOURCE_DIR}/src/ImGUI/examples/")
 include_directories("${CMAKE_SOURCE_DIR}/src/ImGUI/examples/libs/")
 include_directories("${CMAKE_SOURCE_DIR}/src/ImGUI/examples/libs/gl3w/")
 
-add_library(Fuzion SHARED ${SOURCE_FILES})
+add_library(Fuzion SHARED ${SOURCE_FILES} src/Hacks/misc/watermark.cpp src/Hacks/misc/watermark.h)
 target_link_libraries(Fuzion dl SDL2 GL)

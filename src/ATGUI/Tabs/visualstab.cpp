@@ -4,8 +4,8 @@
 #include "../../Utils/xorstring.h"
 #include "../../ImGUI/imgui_internal.h"
 #include "../atgui.h"
-#include "../../Hacks/tracereffect.h"
-#include "../../Hacks/materialconfig.h"
+#include "../../Hacks/visual/tracereffect.h"
+#include "../../Hacks/visual/materialconfig.h"
 #include "../Hooks/hooks.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"

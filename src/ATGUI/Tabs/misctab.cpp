@@ -12,12 +12,12 @@
 #include "../../ImGUI/imgui_internal.h"
 #include "../atgui.h"
 
-#include "../../Hacks/namechanger.h"
-#include "../../Hacks/namestealer.h"
-#include "../../Hacks/grenadehelper.h"
-#include "../../Hacks/clantagchanger.h"
-#include "../../Hacks/valvedscheck.h"
-#include "../../Hacks/profilechanger.h"
+#include "../../Hacks/misc/namechanger.h"
+#include "../../Hacks/misc/namestealer.h"
+#include "../../Hacks/misc/grenadehelper.h"
+#include "../../Hacks/misc/clantagchanger.h"
+#include "../../Hacks/misc/valvedscheck.h"
+#include "../../Hacks/misc/profilechanger.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"
 
@@ -344,6 +344,10 @@ void Misc::RenderTab()
 	{
 		ImGui::BeginChild(XORSTR("Child2"), ImVec2(0, 0), true);
 		{
+			ImGui::Text(XORSTR("Important"));
+			ImGui::Separator();
+			ImGui::Checkbox(XORSTR("Anti-Untrusted"), &Settings::AntiUntrusted::enabled);
+			ImGui::Separator();
 			ImGui::Text(XORSTR("Clantag"));
 			ImGui::Separator();
 			ImGui::Columns(2, nullptr, true);

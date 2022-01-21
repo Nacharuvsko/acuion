@@ -1,7 +1,7 @@
 #include "hooks.h"
 
 #include "../interfaces.h"
-#include "../Hacks/esp.h"
+#include "../Hacks/visual/esp.h"
 
 typedef void (*PaintTraverseFn) (void*, VPANEL, bool, bool);
 

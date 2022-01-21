@@ -2,7 +2,7 @@
 
 #include "../interfaces.h"
 
-#include "../Hacks/snipercrosshair.h"
+#include "../Hacks/visual/snipercrosshair.h"
 
 typedef bool (*ShouldDrawCrosshairFn) (void*);
 

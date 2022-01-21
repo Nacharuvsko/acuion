@@ -11,9 +11,9 @@
 #include "Utils/xorstring.h"
 #include "Utils/bonemaps.h"
 
-#include "Hacks/nosmoke.h"
-#include "Hacks/tracereffect.h"
-#include "Hacks/skinchanger.h"
+#include "Hacks/visual/nosmoke.h"
+#include "Hacks/visual/tracereffect.h"
+#include "Hacks/misc/skinchanger.h"
 #include "settings.h"
 
 

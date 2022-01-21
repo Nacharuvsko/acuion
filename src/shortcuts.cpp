@@ -2,7 +2,7 @@
 #include "ATGUI/atgui.h"
 #include "settings.h"
 
-#include "Hacks/grenadeprediction.h"
+#include "Hacks/visual/grenadeprediction.h"
 
 void Shortcuts::PollEvent(SDL_Event* event)
 {

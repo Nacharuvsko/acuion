@@ -5,11 +5,11 @@
 #include "../../settings.h"
 #include "../../Utils/xorstring.h"
 
-#include "../../Hacks/aimbot.h"
-#include "../../Hacks/esp.h"
-#include "../../Hacks/resolver.h"
-#include "../../Hacks/clantagchanger.h"
-#include "../../Hacks/namechanger.h"
+#include "../../Hacks/aimbot/aimbot.h"
+#include "../../Hacks/visual/esp.h"
+#include "../../Hacks/aimbot/resolver.h"
+#include "../../Hacks/misc/clantagchanger.h"
+#include "../../Hacks/misc/namechanger.h"
 
 #pragma GCC diagnostic ignored "-Wformat-security"
 

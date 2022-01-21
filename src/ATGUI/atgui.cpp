@@ -9,8 +9,8 @@
 #include "Windows/main.h"
 #include "Windows/playerlist.h"
 #include "Windows/skinmodelchanger.h"
-#include "../Hacks/radar.h"
-#include "../Hacks/showspectators.h"
+#include "../Hacks/visual/radar.h"
+#include "../Hacks/visual/showspectators.h"
 
 bool UI::isVisible = false;
 

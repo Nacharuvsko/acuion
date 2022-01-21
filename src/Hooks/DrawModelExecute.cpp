@@ -3,8 +3,8 @@
 #include "../interfaces.h"
 #include "../settings.h"
 
-#include "../Hacks/chams.h"
-#include "../Hacks/esp.h"
+#include "../Hacks/visual/chams.h"
+#include "../Hacks/visual/esp.h"
 
 typedef void (*DrawModelExecuteFn) (void*, void*, void*, const ModelRenderInfo_t&, matrix3x4_t*);
 

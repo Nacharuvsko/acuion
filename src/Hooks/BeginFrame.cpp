@@ -3,12 +3,12 @@
 #include "../Utils/skins.h"
 #include "../interfaces.h"
 
-#include "../Hacks/clantagchanger.h"
-#include "../Hacks/namechanger.h"
-#include "../Hacks/namestealer.h"
-#include "../Hacks/spammer.h"
-#include "../Hacks/radar.h"
-#include "../Hacks/disablepostprocessing.h"
+#include "../Hacks/misc/clantagchanger.h"
+#include "../Hacks/misc/namechanger.h"
+#include "../Hacks/misc/namestealer.h"
+#include "../Hacks/misc/spammer.h"
+#include "../Hacks/visual/radar.h"
+#include "../Hacks/visual/disablepostprocessing.h"
 
 typedef void (*BeginFrameFn) (void*, float);
 
