@@ -492,9 +492,6 @@ void Settings::LoadDefaultsOrSave(std::string path)
 	settings[XORSTR("FOVChanger")][XORSTR("viewmodel_value")] = Settings::FOVChanger::viewmodelValue;
 	settings[XORSTR("FOVChanger")][XORSTR("ignore_scope")] = Settings::FOVChanger::ignoreScope;
 
-	settings[XORSTR("Airstuck")][XORSTR("enabled")] = Settings::Airstuck::enabled;
-	settings[XORSTR("Airstuck")][XORSTR("key")] = Util::GetButtonName(Settings::Airstuck::key);
-
 	settings[XORSTR("SkinChanger")][XORSTR("Skins")][XORSTR("enabled")] = Settings::Skinchanger::Skins::enabled;
 	settings[XORSTR("SkinChanger")][XORSTR("Models")][XORSTR("enabled")] = Settings::Skinchanger::Models::enabled;
 	settings[XORSTR("SkinChanger")][XORSTR("Skins")][XORSTR("perTeam")] = Settings::Skinchanger::Skins::perTeam;
@@ -658,6 +655,23 @@ void Settings::LoadDefaultsOrSave(std::string path)
  	settings[XORSTR("AutoKnife")][XORSTR("Filters")][XORSTR("enemies")] = Settings::AutoKnife::Filters::enemies;
  	settings[XORSTR("AutoKnife")][XORSTR("Filters")][XORSTR("allies")] = Settings::AutoKnife::Filters::allies;
  	settings[XORSTR("AutoKnife")][XORSTR("onKey")] = Settings::AutoKnife::onKey;
+
+	settings[XORSTR("Slowwalk")][XORSTR("enabled")] = Settings::AntiAim::Slowwalk::enabled;
+	settings[XORSTR("SlowWalk")][XORSTR("Key")] = Settings::AntiAim::Slowwalk::Key;
+	settings[XORSTR("Slowwalk")][XORSTR("speed")] = Settings::AntiAim::Slowwalk::Speed;
+
+	settings[XORSTR("Indicators")][XORSTR("enabled")] = Settings::Indicators::enabled;
+	settings[XORSTR("Indicators")][XORSTR("fakeLag")] = Settings::Indicators::fakeLag;
+	settings[XORSTR("Indicators")][XORSTR("slowWalk")] = Settings::Indicators::slowWalk;
+	settings[XORSTR("Indicators")][XORSTR("trigger")] = Settings::Indicators::trigger;
+	settings[XORSTR("Indicators")][XORSTR("posX")] = Settings::Indicators::posX;
+	settings[XORSTR("Indicators")][XORSTR("posY")] = Settings::Indicators::posY;
+	settings[XORSTR("Indicators")][XORSTR("type")] = (int) Settings::Indicators::indicatorsType;
+
+	settings[XORSTR("AntiUntrusted")][XORSTR("enabled")] = Settings::AntiUntrusted::enabled;
+
+	settings[XORSTR("UseSpammer")][XORSTR("enabled")] = Settings::UseSpammer::enabled;
+	settings[XORSTR("UseSpammer")][XORSTR("key")] = Settings::UseSpammer::key;
 
 	std::ofstream(path) << styledWriter.write(settings);
 }
@@ -1027,9 +1041,6 @@ void Settings::LoadConfig(std::string path)
 	GetVal(settings[XORSTR("FOVChanger")][XORSTR("viewmodel_value")], &Settings::FOVChanger::viewmodelValue);
 	GetVal(settings[XORSTR("FOVChanger")][XORSTR("ignore_scope")], &Settings::FOVChanger::ignoreScope);
 
-	GetVal(settings[XORSTR("Airstuck")][XORSTR("enabled")], &Settings::Airstuck::enabled);
-	GetButtonCode(settings[XORSTR("Airstuck")][XORSTR("key")], &Settings::Airstuck::key);
-
 	Settings::Skinchanger::Skins::enabled = false;
 	Settings::Skinchanger::skinsCT.clear();
 	Settings::Skinchanger::skinsT.clear();
@@ -1229,6 +1240,23 @@ void Settings::LoadConfig(std::string path)
  	GetVal(settings[XORSTR("AutoKnife")][XORSTR("Filters")][XORSTR("enemies")], &Settings::AutoKnife::Filters::enemies);
  	GetVal(settings[XORSTR("AutoKnife")][XORSTR("Filters")][XORSTR("allies")], &Settings::AutoKnife::Filters::allies);
  	GetVal(settings[XORSTR("AutoKnife")][XORSTR("onKey")], &Settings::AutoKnife::onKey);
+
+	GetVal(settings[XORSTR("Slowwalk")][XORSTR("enabled")], &Settings::AntiAim::Slowwalk::enabled);
+	GetButtonCode(settings[XORSTR("Slowwalk")][XORSTR("Key")], &Settings::AntiAim::Slowwalk::Key);
+	GetVal(settings[XORSTR("Slowwalk")][XORSTR("speed")], &Settings::AntiAim::Slowwalk::Speed);
+
+	GetVal(settings[XORSTR("Indicators")][XORSTR("enabled")], &Settings::Indicators::enabled);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("fakeLag")], &Settings::Indicators::fakeLag);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("trigger")], &Settings::Indicators::trigger);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("posX")], &Settings::Indicators::posX);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("posY")], &Settings::Indicators::posY);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("slowWalk")], &Settings::Indicators::slowWalk);
+	GetVal(settings[XORSTR("Indicators")][XORSTR("indicatorsType")], (int*)&Settings::Indicators::indicatorsType);
+
+	GetVal(settings[XORSTR("AntiUntrusted")][XORSTR("enabled")], &Settings::AntiUntrusted::enabled);
+
+	GetVal(settings[XORSTR("UseSpammer")][XORSTR("enabled")], &Settings::UseSpammer::enabled);
+	GetButtonCode(settings[XORSTR("UseSpammer")][XORSTR("key")], &Settings::UseSpammer::key);
 }
 
 void Settings::SaveGrenadeInfo(std::string path)

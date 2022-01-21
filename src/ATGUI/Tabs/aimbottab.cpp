@@ -53,6 +53,11 @@ static bool spreadLimitEnabled = false;
 static float spreadLimit = 0.1f;
 static bool hitChanceEnabled = false;
 static float hitChance = 80.f;
+// todo
+static bool minDamageOverriden = false;
+static float minDamage = 69.f;
+static float minDamageOverride = 5.f;
+
 static bool autoWallEnabled = false;
 static float autoWallValue = 10.0f;
 static bool autoAimRealDistance = false;
@@ -149,6 +154,7 @@ void UI::UpdateWeaponSettings()
 			.autoAimRealDistance = autoAimRealDistance,
 			.autoSlow = autoSlow,
 			.predEnabled = predEnabled,
+	    		.minDamageOverriden = minDamageOverriden,
 			.scopeControlEnabled = scopeControlEnabled,
 
 			.engageLockTTR = engageLockTTR,
@@ -165,6 +171,8 @@ void UI::UpdateWeaponSettings()
 			.rcsAmountY = rcsAmountY,
 			.autoWallValue = autoWallValue,
 			.spreadLimit = spreadLimit,
+			.minDamage = minDamage,
+			.minDamageOverride = minDamageOverride,
 			.hitChance = hitChance,
 	};
 
@@ -428,6 +436,14 @@ void Aimbot::RenderTab()
 				UI::UpdateWeaponSettings();
 			if( ImGui::SliderFloat(XORSTR("##hitChance"), &hitChance, 0, 100) )
 				UI::UpdateWeaponSettings();
+			// todo
+			if( ImGui::SliderFloat(XORSTR("##minDamage"), &minDamage, 0, 120) )
+			    UI::UpdateWeaponSettings();
+			if( ImGui::Checkbox(XORSTR("Damage Override (WIP)"), &minDamageOverriden) )
+			    UI::UpdateWeaponSettings();
+			if( ImGui::SliderFloat(XORSTR("##minDamageOverride"), &minDamageOverride, 0, 120) )
+			    UI::UpdateWeaponSettings();
+
 			ImGui::EndChild();
 		}
 	}

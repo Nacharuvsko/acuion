@@ -4,7 +4,8 @@
 #include "interfaces.h"
 
 HFont esp_font = 0;
-HFont indicators_font = 0;
+HFont indicators_font_skeet = 0;
+HFont indicators_font_crosshair = 0;
 
 static HFont CreateFont( const char* fontName, int size, int flag, int weight ) {
 	HFont newFont = surface->CreateFont();
@@ -22,7 +23,13 @@ void Fonts::SetupFonts()
 								Settings::UI::Fonts::ESP::size,
 								Settings::UI::Fonts::ESP::flags);
 
-	indicators_font = CreateFont(Settings::UI::Fonts::Indicators::family,
-								Settings::UI::Fonts::Indicators::size,
-								Settings::UI::Fonts::Indicators::flags); // weight is actually changing nothing :c
+	indicators_font_skeet = CreateFont(Settings::UI::Fonts::Indicators::family_skeet,
+								Settings::UI::Fonts::Indicators::size_skeet,
+								Settings::UI::Fonts::Indicators::flags_skeet); // weight is actually changing nothing :c
+
+	indicators_font_crosshair = CreateFont(Settings::UI::Fonts::Indicators::family_crosshair,
+	    Settings::UI::Fonts::Indicators::size_crosshair,
+	    Settings::UI::Fonts::Indicators::flags_crosshair); // weight is actually changing nothing :c
 }
+
+#pragma clang diagnostic pop

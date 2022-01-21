@@ -619,6 +619,16 @@ static void AutoSlow(C_BasePlayer* player, float& forward, float& sideMove, floa
 	C_BaseCombatWeapon* activeWeapon = (C_BaseCombatWeapon*) entityList->GetClientEntityFromHandle(localplayer->GetActiveWeapon());
 	if (!activeWeapon || activeWeapon->GetAmmo() == 0)
 		return;
+	
+
+	QAngle ViewAngle;
+	engine->GetViewAngles(ViewAngle);
+
+	static Vector oldOrigin = localplayer->GetAbsOrigin();
+	Vector velocity = (localplayer->GetVecOrigin() - oldOrigin)
+	                  * (1.f / globalVars->interval_per_tick);
+	oldOrigin = localplayer->GetAbsOrigin();
+	float speed = velocity.Length();
 
 	if( Settings::Aimbot::SpreadLimit::enabled )
 	{

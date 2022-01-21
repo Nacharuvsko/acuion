@@ -416,7 +416,7 @@ void AntiAim::CreateMove(CUserCmd* cmd)
     static bool bSend = true;
     bSend = !bSend;
 
-    bool should_clamp = false;
+    bool should_clamp = Settings::AntiUntrusted::enabled;
 
     bool needToFlick = false;
     float tempangle = 0.f;

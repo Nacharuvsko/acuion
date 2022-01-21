@@ -42,6 +42,12 @@ enum class ClanTagType : int
 	LETTERS,
 };
 
+enum class IndicatorsType : int
+{
+    SKEET,
+    CROSSHAIR
+};
+
 enum class AutostrafeType : int
 {
 	AS_FORWARDS,
@@ -249,6 +255,7 @@ struct AimbotWeapon_t
 		 autoAimRealDistance,
 		 autoSlow,
 		 predEnabled,
+		 minDamageOverriden,
 		 scopeControlEnabled;
 	int engageLockTTR = 700;
 	Bone bone = CONST_BONE_HEAD;
@@ -447,9 +454,15 @@ namespace Settings
 			}
 			namespace Indicators
 			{
-				inline char* family = (char*)"Arial Bold";
-				inline int size = 36;
-				inline int flags = (int) FontFlags::FONTFLAG_ANTIALIAS;
+			    	// $keet
+				inline char* family_skeet = (char*)"Arial Bold";
+				inline int size_skeet = 36;
+				inline int flags_skeet = (int) FontFlags::FONTFLAG_ANTIALIAS;
+
+				// crosshair
+				inline char* family_crosshair = (char*)"Tahoma";
+				inline int size_crosshair = 24;
+				inline int flags_crosshair = (int) FontFlags::FONTFLAG_ANTIALIAS;
 			}
 		}
 	}
@@ -1297,6 +1310,12 @@ namespace Settings
 		inline ButtonCode_t key = ButtonCode_t::KEY_T;
 	}
 
+	namespace UseSpammer
+	{
+	    inline bool enabled = false;
+	    inline ButtonCode_t key = ButtonCode_t::KEY_E;
+	}
+
 	namespace ProfileChanger
 	{
 		inline int coinID = 890;
@@ -1390,6 +1409,8 @@ namespace Settings
 
 	    inline int posX = 5;
 	    inline int posY = 10;
+
+	    inline IndicatorsType indicatorsType = IndicatorsType::SKEET;
 	}
 
     namespace Debug

@@ -27,6 +27,7 @@
 #include "../Hacks/misc/keyfix.h"
 #include "../Hacks/visual/noCSM.h"
 #include "../Hacks/misc/slowwalk.hpp"
+#include "../Hacks/misc/usespammer.h"
 
 bool CreateMove::sendPacket = true;
 QAngle CreateMove::lastTickViewAngles = QAngle(0, 0, 0);
@@ -78,6 +79,7 @@ bool Hooks::CreateMove(void* thisptr, float flInputSampleTime, CUserCmd* cmd)
 
 	EdgeJump::PostPredictionCreateMove(cmd);
 	NoFall::PostPredictionCreateMove(cmd);
+	UseSpammer::CreateMove(cmd);
 
         *sendPacket = CreateMove::sendPacket;
 

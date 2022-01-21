@@ -21,6 +21,7 @@ void Visuals::RenderTab()
 	static const char* TeamColorTypes[] = { "Absolute", "Relative" };
 	static const char* ChamsTypes[] = { "Normal", "Normal - XQZ", "Flat", "Flat - XQZ" };
 	static const char* ArmsTypes[] = { "Default", "Wireframe", "None" };
+	static const char* IndicatorTypes[] = { "Skeet", "Crosshair" };
 	static const char* WeaponTypes[] = { "Default", "Wireframe", "None" };
 	static const char* SmokeTypes[] = { "Wireframe", "None" };
 	static const char* Sounds[] = { "None", "SpongeBob", "Half life", "Half life 2", "Half life 3", "Half life 4", "BB Gun Bell", "Dopamine", "Wub", "Pedo Yes!", "Meme", "Error", "Orchestral" };
@@ -282,8 +283,9 @@ void Visuals::RenderTab()
 
 				ImGui::Columns(2, nullptr, false);
 				{
-				    ImGui::Checkbox(XORSTR("Indicators"), &Settings::Indicators::enabled);
+				    ImGui::Checkbox(XORSTR("Enabled"), &Settings::Indicators::enabled);
 
+				    ImGui::Combo(XORSTR("##INDSTYLE"), (int*)& Settings::Indicators::indicatorsType, IndicatorTypes, IM_ARRAYSIZE(IndicatorTypes));
 
 
 				    ImGui::Checkbox(XORSTR("Fake Lag"), &Settings::Indicators::fakeLag);
